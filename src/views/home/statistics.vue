@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRequest } from 'norm-axios'
-import SystemApi from '@/services/api/system.ts'
+import SystemApi from '@/service/api/system.ts'
 
 const { data } = useRequest(SystemApi.getStatistics)
 
