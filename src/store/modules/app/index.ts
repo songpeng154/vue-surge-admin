@@ -213,7 +213,9 @@ const useAppStore = defineStore('App', () => {
     clearTransition ? temporaryClearTransition(updateTheme) : updateTheme()
   }
 
-  const toggleThemeModeTransition = (event: MouseEvent, mode?: ThemeMode) => {
+  const toggleThemeModeTransition = async (event: MouseEvent, mode?: ThemeMode) => {
+    await nextTick()
+
     // 检查浏览器是否支持 View Transition API
     if (!document.startViewTransition) return toggleThemeMode(mode)
 
@@ -233,11 +235,13 @@ const useAppStore = defineStore('App', () => {
 
       document.documentElement.animate(
         {
-          clipPath: isDark ? clipPath.reverse() : clipPath,
+          clipPath: isDark ? [...clipPath].reverse() : clipPath,
         },
         {
           duration: 450,
           easing: 'ease-in',
+          // 防止闪烁
+          fill: 'both',
           pseudoElement: isDark ? '::view-transition-old(root)' : '::view-transition-new(root)',
         },
       )

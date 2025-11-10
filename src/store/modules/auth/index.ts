@@ -5,7 +5,7 @@ import RouterConstant from '@/constant/router'
 import ServiceConstant from '@/constant/service'
 import router from '@/router'
 import { RouterUtils } from '@/router/utils.ts'
-import UserApi from '@/services/api/user'
+import UserApi from '@/service/api/user'
 import { tokenCache } from '@/store/caches'
 
 const initAuth: AuthStore = {

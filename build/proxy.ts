@@ -1,9 +1,13 @@
 import type { ProxyOptions } from 'vite'
 import { getAllServiceConfig } from '../src/utils/env.ts'
 
-// 代理配置
-export function proxyConfig(viteEnv: ImportMetaEnv): Recordable<string | ProxyOptions> {
-  return getAllServiceConfig(viteEnv).reduce((proxy, key) => {
+/**
+ * 代理配置
+ * @param viteEnv 环境变量
+ * @param extra 额外的代理配置
+ */
+export function proxyConfig(viteEnv: ImportMetaEnv, extra?: Recordable<string | ProxyOptions>): Recordable<string | ProxyOptions> {
+  const proxy = getAllServiceConfig(viteEnv).reduce((proxy, key) => {
     const server = viteEnv[key]
     if (typeof server === 'string') return proxy
     // 前缀
@@ -14,9 +18,11 @@ export function proxyConfig(viteEnv: ImportMetaEnv): Recordable<string | ProxyOp
     proxy[prefix] = {
       target: api,
       changeOrigin: true,
+      ws: true,
       rewrite: path => path.replace(new RegExp(`^${prefix}`), ''),
     }
 
     return proxy
-  }, {})
+  }, { })
+  return { ...proxy, ...extra }
 }

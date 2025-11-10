@@ -2,7 +2,7 @@ import type { ResponseContent } from 'norm-axios'
 import { NormAxios } from 'norm-axios'
 import MessageConstant from '@/constant/message.ts'
 import ServiceConstant from '@/constant/service.ts'
-import { showMessage } from '@/services/request/utils'
+import { showMessage } from '@/service/request/utils'
 import useAuthStore from '@/store/modules/auth'
 import { getServicePrefixOrUrl } from '@/utils/env'
 

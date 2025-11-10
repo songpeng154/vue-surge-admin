@@ -1,4 +1,4 @@
-import fakeService from '@/services/request/fake'
+import fakeService from '@/service/request/fake'
 
 // 用户相关的Api
 class UserApi {
