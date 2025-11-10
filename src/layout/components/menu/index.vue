@@ -58,11 +58,13 @@ function onClick(key) {
     :options="menus"
     :accordion="appStore.isMenuAccordion"
     v-bind="menuProps"
-    class="w-full"
+    class="menu w-full"
     @update:value="onClick"
   />
 </template>
 
 <style scoped lang="scss">
-
+.menu *{
+  user-select: none;
+}
 </style>
