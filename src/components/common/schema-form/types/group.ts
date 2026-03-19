@@ -27,7 +27,7 @@ export type GroupCallbackParamsFunction<
   DComponentsName extends ComponentsName = ComponentsName,
   R = never,
 >
-    = ((params: GroupCallbackParams<TForm, DComponentsName>) => R)
+  = ((params: GroupCallbackParams<TForm, DComponentsName>) => R)
 
 export interface DefineGroupSchema<
   TForm extends Recordable = any,

@@ -65,7 +65,7 @@ export function pathToPascalCase(path: string) {
     .join('')
 }
 
-// 字符串转'-'分隔形式
+// 字母转'-'分隔形式
 export function toKebabCase(str: string) {
   return str
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2') // 在小写字母或数字和大写字母之间加上 -

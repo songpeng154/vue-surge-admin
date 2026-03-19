@@ -1,4 +1,4 @@
-import type { DebouncedFunction } from 'es-toolkit/dist/compat/function/debounce'
+import type { DebouncedFunc } from 'es-toolkit/dist/compat/function/debounce'
 import { debounce } from 'es-toolkit/compat'
 
 export interface DebounceOptions {
@@ -28,7 +28,7 @@ function useDebounce<F extends AnyFunction>(fn: F, ms: MaybeRef<number>, options
     })
   }
 
-  let debounceFn: DebouncedFunction<F> = createDebounceFn()
+  let debounceFn: DebouncedFunc<F> = createDebounceFn()
 
   watchEffect(() => {
     if (debounceFn) debounceFn.cancel()

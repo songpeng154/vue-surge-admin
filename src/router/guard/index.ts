@@ -1,18 +1,12 @@
 import type { Router } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 import createAuthGuard from '@/router/guard/auth.ts'
+import createBaseGuard from '@/router/guard/base.ts'
 import useAppStore from '@/store/modules/app'
 
 function createRouterGuard(router: Router) {
-  // 跳转之前
-  router.beforeEach((to, from, next) => {
-    const appStore = useAppStore()
-    window.$loadingBar?.start()
-    // 跳转之前取消全局loading
-    appStore.toggleFullScreenLoading(false)
-    // 鉴权守卫
-    createAuthGuard(to, from, next)
-  })
+  router.beforeEach(createBaseGuard)
+  router.beforeEach(createAuthGuard)
 
   // 跳转之后
   router.afterEach((to) => {

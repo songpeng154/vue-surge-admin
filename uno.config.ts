@@ -40,14 +40,14 @@ export default defineConfig<Theme>({
     'flex-y-center': 'flex items-center',
 
     /* 为了自定义主题的代码提示 (unocss bug) */
-    'text-base': 'text-base',
-    'text-secondary': 'text-secondary',
-    'text-tertiary': 'text-tertiary',
-    'text-inverted': 'text-inverted',
-    'bg-container': 'bg-container',
-    'bg-layout': 'bg-layout',
-    'bg-layer': 'bg-layer',
-    'bg-inverted': 'bg-inverted',
+    // 'text-base': 'text-base',
+    // 'text-secondary': 'text-secondary',
+    // 'text-tertiary': 'text-tertiary',
+    // 'text-inverted': 'text-inverted',
+    // 'bg-container': 'bg-container',
+    // 'bg-layout': 'bg-layout',
+    // 'bg-layer': 'bg-layer',
+    // 'bg-inverted': 'bg-inverted',
   },
   theme: {
     colors: {

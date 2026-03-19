@@ -68,8 +68,9 @@ const useAuthStore = defineStore('Auth', () => {
   const handleLoginAfter = async () => {
     // 获取用户信息
     await getUserinfo()
+    const path = router.currentRoute.value.query.redirect as string || RouterConstant.HOME_PATH
     // 重定向路径
-    await router.replace(RouterConstant.HOME_PATH)
+    await router.replace(path)
     window.$notification.info({
       title: '登录成功',
       content: `欢迎回来，${auth.userinfo?.username}！`,

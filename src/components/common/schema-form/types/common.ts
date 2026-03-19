@@ -41,7 +41,7 @@ export type CallbackParamsFunction<
   DComponentsName extends ComponentsName = ComponentsName,
   R = never,
 >
-    = ((params: CallbackParams<TForm, DComponentsName>) => R)
+  = ((params: CallbackParams<TForm, DComponentsName>) => R)
 
 // 插槽内容
 export type SlotsContent = string | VNode | VNode[]
@@ -159,14 +159,14 @@ export type DefineSchema<
   TForm extends Recordable = any,
   DComponentsName extends ComponentsNameRef = ComponentsNameRef,
 >
-    = DComponentsName extends ComponentsNameRef ? Schema<TForm, DComponentsName> : never
+  = DComponentsName extends ComponentsNameRef ? Schema<TForm, DComponentsName> : never
 
 // 解包 JSON 格式配置
 export type UnwrapSchema<
   TForm extends Recordable = any,
   DComponentsName extends ComponentsNameRef = ComponentsNameRef,
 >
-    = UnwrapRef<DefineSchema<TForm, DComponentsName>>
+  = UnwrapRef<DefineSchema<TForm, DComponentsName>>
 
 /* --------------通用类型-------------- */
 

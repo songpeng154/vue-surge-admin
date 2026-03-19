@@ -1,7 +1,7 @@
 // 服务常量
 export default class ServiceConstant {
   // token 过期时间 （4小时后过期）
-  static TOKEN_EXPIRATION_TIME = new Date(new Date().getTime() + 1000 * 60 * 1000)
+  static TOKEN_EXPIRATION_TIME = new Date(Date.now() + 1000 * 60 * 1000)
 
   // 接口请求超时时间 （一分钟）
   static REQUEST_TIMEOUT = 60 * 1000

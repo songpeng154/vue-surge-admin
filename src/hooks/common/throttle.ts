@@ -1,4 +1,4 @@
-import type { DebouncedFunction } from 'es-toolkit/dist/compat/function/debounce'
+import type { DebouncedFunc } from 'es-toolkit/dist/compat/function/debounce'
 import { throttle } from 'es-toolkit/compat'
 
 export interface ThrottleOptions {
@@ -21,7 +21,7 @@ function useThrottle<F extends AnyFunction>(fn: F, ms: MaybeRef<number>, options
       trailing: toValue(options.trailing),
     })
   }
-  let throttleFn: DebouncedFunction<F> = createThrottle()
+  let throttleFn: DebouncedFunc<F> = createThrottle()
 
   watchEffect(() => {
     if (throttleFn) throttleFn.cancel()
