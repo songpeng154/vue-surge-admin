@@ -24,7 +24,8 @@ function useThrottle<F extends AnyFunction>(fn: F, ms: MaybeRef<number>, options
   let throttleFn: DebouncedFunc<F> = createThrottle()
 
   watchEffect(() => {
-    if (throttleFn) throttleFn.cancel()
+    if (throttleFn)
+      throttleFn.cancel()
 
     throttleFn = createThrottle()
   })

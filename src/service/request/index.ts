@@ -33,8 +33,9 @@ const service = new NormAxios<Result>({
           await authStore.signOut()
           !isCancelMessagePrompt && showMessage(ServiceConstant.SIGN_OUT_CODE[code], 'warning')
         }
-        else
+        else {
           !isCancelMessagePrompt && showMessage(ServiceConstant.STATUS_ERROR[code] || msg || MessageConstant.SERVER_ERROR)
+        }
       }
       return responseContent
     },
@@ -45,13 +46,15 @@ const service = new NormAxios<Result>({
       if (err.response) {
         // 请求已发出，但服务器响应的状态码错误
         const msg = ServiceConstant.STATUS_ERROR[err.response.status]
-        if (msg) errorMsg = msg
+        if (msg)
+          errorMsg = msg
         responseContent[1] = { code: err.response.status, msg: errorMsg }
       }
       else {
         // 处理请求时的错误
         const msg = ServiceConstant.AXIOS_REQUEST_ERROR[err.code as string]
-        if (msg) errorMsg = msg
+        if (msg)
+          errorMsg = msg
         responseContent[1] = { code: err.code as string, msg: errorMsg, axiosError: err }
       }
       showMessage(errorMsg)

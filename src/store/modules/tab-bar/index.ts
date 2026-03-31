@@ -56,7 +56,8 @@ const useTabBarStore = defineStore('TabBar', () => {
 
   // 添加 tabBar
   const addTab = (tab: Tab) => {
-    if (blacklist.every(item => item === tab.meta.title)) return
+    if (blacklist.every(item => item === tab.meta.title))
+      return
 
     // 存在就替换，不存在就push
     isExist(tab.path)
@@ -66,10 +67,11 @@ const useTabBarStore = defineStore('TabBar', () => {
 
   // 关闭
   const closeTab = (tab: Tab) => {
-    if (tabBar.tabs.length === 1) return
+    if (tabBar.tabs.length === 1)
+      return
     const index = getIndex(tab.path)
     tabBar.tabs.splice(index, 1)
-    isActive(tab.path) && router.push(tabBar.tabs[tabBar.tabs.length - 1].path)
+    isActive(tab.path) && router.push(tabBar.tabs.at(-1).path)
   }
 
   // 刷新当前激活的路由
@@ -85,7 +87,8 @@ const useTabBarStore = defineStore('TabBar', () => {
   // 关闭左侧
   const closeLeft = (path: string) => {
     const index = getIndex(path)
-    if (index === 0 || index === -1) return
+    if (index === 0 || index === -1)
+      return
     index > activeIndex.value && router.push(path)
     const tabs = tabBar.tabs.slice(index)
     tabBar.tabs = [...getCurrentTabsAffixTab(index, 'left'), ...tabs]
@@ -94,7 +97,8 @@ const useTabBarStore = defineStore('TabBar', () => {
   // 关闭右侧
   const closeRight = (path: string) => {
     const index = getIndex(path)
-    if (index === tabBar.tabs.length - 1 || index === -1) return
+    if (index === tabBar.tabs.length - 1 || index === -1)
+      return
     index < activeIndex.value && router.push(path)
     const tabs = tabBar.tabs.slice(0, index + 1)
     tabBar.tabs = [...tabs, ...getCurrentTabsAffixTab(index, 'right')]
@@ -103,11 +107,13 @@ const useTabBarStore = defineStore('TabBar', () => {
   // 关闭其他
   const closeOther = (path: string) => {
     const i = getIndex(path)
-    if (i === -1) return
+    if (i === -1)
+      return
     i !== activeIndex.value && router.push(path)
     const tabs = [...getCurrentTabsAffixTab()]
     const tab = tabBar.tabs[i]
-    if (!tab.meta?.affixTab) tabs.push(tab)
+    if (!tab.meta?.affixTab)
+      tabs.push(tab)
     tabBar.tabs = tabs
   }
 

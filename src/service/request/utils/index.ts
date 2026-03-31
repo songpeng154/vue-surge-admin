@@ -6,7 +6,8 @@ let lastMessage: string | undefined
 
 // 解决重复提示
 export function showMessage(message: string, type: keyof Omit<MessageApiInjection, 'destroyAll'> = 'error') {
-  if (message === lastMessage && ServiceConstant.CLOSE_REPEAT_ERROR_MESSAGE) return
+  if (message === lastMessage && ServiceConstant.CLOSE_REPEAT_ERROR_MESSAGE)
+    return
   void window.$message?.[type](message, { onAfterLeave: () => lastMessage = undefined })
   lastMessage = message
 }

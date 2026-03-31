@@ -6,9 +6,9 @@ import type {
   PopupSchemaFormSlots,
 } from '@/components/common/schema-form/types/popup.ts'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import expose from '@/components/common/schema-form/hooks/expose.ts'
-import method from '@/components/common/schema-form/hooks/method.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<PopupSchemaFormProps>(), {
   autoPlaceholder: true,
@@ -60,7 +60,7 @@ const [DefineForm, Form] = createReusableTemplate()
 
 // 提供Schema上下文
 useProvideSchemaFormContext(props, model)
-const formProps = omitProps(props, [
+const formProps = useOmitProps(props, [
   'schema',
   'visible',
   'popupType',
@@ -77,10 +77,10 @@ const formProps = omitProps(props, [
   'confirmTitle',
   'confirmContent',
 ])
-const formContentSlots = omitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'popupHeader', 'popupFormBefore', 'popupFormAfter', 'popupFooter'])
+const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'popupHeader', 'popupFormBefore', 'popupFormAfter', 'popupFooter'])
 // 通用方法
-const { formRef, commonExpose } = expose()
-const { handleReset, handleSubmit } = method(props, commonExpose, model)
+const { formRef, commonExpose } = useExpose()
+const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
 const dialog = useDialog()
 // 关闭弹框并重置表单
 function closeAndReset() {

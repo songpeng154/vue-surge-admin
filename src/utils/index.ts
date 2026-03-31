@@ -12,23 +12,53 @@ export function runTacticsAction(tacticsAction: TacticsAction[]) {
   })
 }
 
-// 批量设置CSS变量
-export function setCSSVariables(variable: Recordable, el: HTMLElement = document.documentElement) {
-  Object.keys(variable).forEach((key) => {
-    if (getCSSVariable(key, el) === variable[key])
-      return
-    setCSSVariable(key, variable[key], el)
-  })
-}
-
-// 设置Css变量
-export function setCSSVariable(key: string, value: string, el: HTMLElement = document.documentElement) {
-  el.style.setProperty(`--${key}`, value)
-}
-
 // 获取CSS变量
 export function getCSSVariable(key: string, el: HTMLElement = document.documentElement) {
   return getComputedStyle(el).getPropertyValue(`--${key}`)
+}
+
+/**
+ * 将 JS 对象转换为 CSS 变量字符串
+ * @param {object} vars - 你的主题变量对象
+ * @param {string} prefix - 前缀
+ * @param {string} selector - CSS 选择器，通常是 ':root' 或 'html[data-theme="dark"]'
+ * @returns {string} 完整的 CSS 规则字符串
+ */
+export function generateCssVariableString(vars: Record<string, any>, prefix?: string, selector: string = ':root'): string {
+  let cssVariables = ''
+
+  for (const [key, value] of Object.entries(vars)) {
+    // 将驼峰命名 (primaryColor) 转换为中划线命名 (primary-color)
+    const kebabKey = toKebabCase(key)
+
+    // 拼接成 CSS 变量格式：--primary-color: #1677ff;
+    if (prefix) {
+      const kebabPrefix = toKebabCase(prefix)
+      cssVariables += `  --${kebabPrefix}-${kebabKey}: ${value};\n`
+    }
+    else {
+      cssVariables += `  --${kebabKey}: ${value};\n`
+    }
+  }
+
+  // 包装在选择器中
+  return `${selector} {\n${cssVariables}}`
+}
+
+// 注入CSS
+export function injectCSS(css: string, id: string): void {
+  let styleNode = document.getElementById(id) as HTMLStyleElement | null
+
+  if (!styleNode) {
+    styleNode = document.createElement('style')
+    styleNode.id = id
+
+    styleNode.setAttribute('type', 'text/css')
+
+    document.head.appendChild(styleNode)
+  }
+
+  styleNode.innerHTML = css
 }
 
 // 临时清楚过渡效果
@@ -67,10 +97,7 @@ export function pathToPascalCase(path: string) {
 
 // 字母转'-'分隔形式
 export function toKebabCase(str: string) {
-  return str
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2') // 在小写字母或数字和大写字母之间加上 -
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // 在连续大写字母和小写字母之间加上 -
-    .toLowerCase() // 转为小写
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase()
 }
 
 // 判断是否有滚动条
@@ -87,6 +114,6 @@ export function scrollToElement(element: HTMLElement, behavior: ScrollBehavior =
 }
 
 // 获取图片路径
-export const getImageUrl = (path: string) => {
+export function getImageUrl(path: string) {
   return new URL(`../assets/images/${path}`, import.meta.url).href
 }

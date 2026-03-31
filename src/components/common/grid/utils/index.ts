@@ -36,8 +36,9 @@ export function setItemVisible(cols: number, collapsed: boolean, notCollapsedRow
       }
     }
   }
-  else
+  else {
     displayIndexList = itemDataList.map((_, index) => index)
+  }
 
   const overflow = itemDataList.some((item, index) => !item.suffix && !displayIndexList.includes(index))
 

@@ -4,13 +4,13 @@ import type { FormValidateCallback, ShouldRuleBeApplied } from 'naive-ui/es/form
 import type { SchemaFormCommonExpose, SchemaFormCommonProps } from '@/components/common/schema-form/types/common.ts'
 import { cloneDeep } from 'es-toolkit'
 import { useSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 import { scrollToElement } from '@/utils'
 
 const props = defineProps<SchemaFormCommonProps>()
 const { model, itemsDataMap } = useSchemaFormContext()!
 
-const nFormProps = omitProps(props, [
+const nFormProps = useOmitProps(props, [
   'formClass',
   'formStyle',
   'model',

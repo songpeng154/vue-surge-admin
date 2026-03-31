@@ -6,7 +6,7 @@ import { get, set } from 'es-toolkit/compat'
 const [useProvideSchemaFormContext, useSchemaFormContext] = createInjectionState((schemaFormProps: SchemaFormCommonProps, model: ModelRef<Recordable>) => {
   const itemsDataMap = reactive<Map<string, SchemaItemData>>(new Map())
 
-  const maxLabelWidth = computed(() => Math.max(...[...itemsDataMap.values()].map(value => value.labelWidth)))
+  const maxLabelWidth = computed(() => Math.max(...Array.from(itemsDataMap.values(), value => value.labelWidth)))
 
   // 获取model值
   const getModelValue = (field: string) => get(model.value, field)

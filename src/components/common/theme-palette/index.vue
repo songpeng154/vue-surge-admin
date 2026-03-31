@@ -19,7 +19,7 @@ const appStore = useAppStore()
       <span
         v-for="item in AppConstant.THEME_COLORS"
         :key="item"
-        class="h-[20px] w-[20px] flex-center cursor-pointer rounded-sm text-white"
+        class="text-white rounded-sm flex-center h-[20px] w-[20px] cursor-pointer"
         :style="{ background: item }"
         @click="appStore.setThemeColor(item)"
       >

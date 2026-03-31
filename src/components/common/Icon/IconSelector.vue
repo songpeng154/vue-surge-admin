@@ -40,13 +40,15 @@ async function fullContainer() {
 }
 
 function loadIcon() {
-  if (pageIcons.value.length === icons.value.length) return
+  if (pageIcons.value.length === icons.value.length)
+    return
 
   pageIcons.value.push(...icons.value.slice(pageIcons.value.length, pageIcons.value.length + 100))
 }
 
 watch(() => arrivedState.bottom, () => {
-  if (!arrivedState.bottom) return
+  if (!arrivedState.bottom)
+    return
   loadIcon()
 })
 
@@ -57,7 +59,9 @@ watch(visible, () => {
     })
     fullContainer()
   }
-  else lastScrollHeight.value = y.value
+  else {
+    lastScrollHeight.value = y.value
+  }
 })
 </script>
 
@@ -99,12 +103,12 @@ watch(visible, () => {
       </n-tabs>
       <div
         ref="scrollContainer"
-        class="grid grid-cols-[repeat(auto-fill,40px)] h-[300px] justify-between gap-[5px] overflow-auto px-1"
+        class="px-1 gap-[5px] grid grid-cols-[repeat(auto-fill,40px)] h-[300px] justify-between overflow-auto"
       >
         <div
           v-for="item in pageIcons"
           :key="item"
-          class="h-[40px] w-[100%] flex-center cursor-pointer border border-base rounded border-solid hover:border-primary"
+          class="border-base border rounded border-solid flex-center h-[40px] w-[100%] cursor-pointer hover:border-primary"
           :class="item === iconValue ? 'border-primary text-primary' : undefined"
           @click="selectIcon(item)"
         >

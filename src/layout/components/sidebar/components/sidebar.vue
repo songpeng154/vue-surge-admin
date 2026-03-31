@@ -10,7 +10,7 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col">
+  <div class="flex flex-col h-full w-full">
     <Logo />
     <div class="flex-1 overflow-x-hidden overflow-y-auto">
       <Menu

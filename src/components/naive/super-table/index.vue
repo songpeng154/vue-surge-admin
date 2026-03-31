@@ -17,9 +17,11 @@ const enhancedColumns = computed(() => {
     const key = col.key
     const slotName = `cell-${key}`
 
-    if (slots[slotName]) return {
-      ...col,
-      render: (rowData: any) => slots[slotName]?.({ row: rowData }),
+    if (slots[slotName]) {
+      return {
+        ...col,
+        render: (rowData: any) => slots[slotName]?.({ row: rowData }),
+      }
     }
 
     return col

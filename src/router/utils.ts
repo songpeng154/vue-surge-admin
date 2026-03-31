@@ -27,7 +27,8 @@ export class RouterUtils {
   static getStaticRoutes() {
     return Object.keys(this.STATIC_ROUTES).reduce<AppRouteRecordRaw[]>((routerModules, routerKey) => {
       const router = (this.STATIC_ROUTES[routerKey] as any).default
-      if (!(router instanceof Object)) return routerModules
+      if (!(router instanceof Object))
+        return routerModules
       routerModules.push(...router)
       return routerModules
     }, [])
@@ -37,7 +38,8 @@ export class RouterUtils {
   static getRouteList() {
     return Object.keys(this.ROUTER_MODULES_LIST).reduce<AppRouteRecordRaw[]>((routerModules, routerKey) => {
       const router = (this.ROUTER_MODULES_LIST[routerKey] as any).default
-      if (!(router instanceof Object)) return routerModules
+      if (!(router instanceof Object))
+        return routerModules
       routerModules.push(router)
       return routerModules
     }, [])

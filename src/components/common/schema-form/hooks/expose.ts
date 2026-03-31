@@ -1,6 +1,6 @@
 import type { SchemaFormCommonExpose } from '@/components/common/schema-form/types/common.ts'
 
-function expose() {
+function useExpose() {
   const formRef = ref<SchemaFormCommonExpose>()
   const commonExpose: SchemaFormCommonExpose = {} as SchemaFormCommonExpose
 
@@ -16,4 +16,4 @@ function expose() {
   return { formRef, commonExpose }
 }
 
-export default expose
+export default useExpose

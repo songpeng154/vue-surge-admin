@@ -1,7 +1,14 @@
-import type { Theme } from '@unocss/preset-uno'
+import type { Theme } from 'unocss'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
-import { defineConfig, presetIcons, presetUno, transformerDirectives } from 'unocss'
+import { defineConfig, presetIcons, presetWind3, transformerDirectives } from 'unocss'
 import AppConstant from './src/constant/app'
+import {
+  BACKGROUND_COLOR_KEYS,
+  BORDER_COLOR_KEYS,
+  createThemeRule,
+  FILL_COLOR_KEYS,
+  TEXT_COLOR_KEYS,
+} from './src/utils/unocss.ts'
 
 export default defineConfig<Theme>({
   content: {
@@ -13,7 +20,8 @@ export default defineConfig<Theme>({
     transformerDirectives(),
   ],
   presets: [
-    presetUno(),
+    presetWind3({
+    }),
     presetIcons({
       scale: 1.2,
       // 额外的CSS属性配置
@@ -32,22 +40,16 @@ export default defineConfig<Theme>({
     [/^full-(\d+)$/, ([, d]) => ({ width: `${d}px`, height: `${d}px` })],
     // 填充（任意单位）
     [/^full-\[(.*)\]$/, ([, d]) => ({ width: d, height: d })],
+    createThemeRule('text', TEXT_COLOR_KEYS, 'color', 'text-color'),
+    createThemeRule('bg', BACKGROUND_COLOR_KEYS, 'background-color', 'background-color'),
+    createThemeRule('border', BORDER_COLOR_KEYS, 'border-color', 'border-color'),
+    createThemeRule('bg-fill', FILL_COLOR_KEYS, 'background-color', 'fill-color'),
   ],
   shortcuts: {
     'w-h-full': 'w-full h-full',
     'flex-center': 'flex justify-center items-center',
     'flex-x-center': 'flex justify-center',
     'flex-y-center': 'flex items-center',
-
-    /* 为了自定义主题的代码提示 (unocss bug) */
-    // 'text-base': 'text-base',
-    // 'text-secondary': 'text-secondary',
-    // 'text-tertiary': 'text-tertiary',
-    // 'text-inverted': 'text-inverted',
-    // 'bg-container': 'bg-container',
-    // 'bg-layout': 'bg-layout',
-    // 'bg-layer': 'bg-layer',
-    // 'bg-inverted': 'bg-inverted',
   },
   theme: {
     colors: {

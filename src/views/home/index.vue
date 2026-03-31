@@ -7,7 +7,7 @@ console.log(location)
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-10px">
+  <div class="flex flex-col gap-10px h-full">
     <Statistics />
     <AccessCount />
     <Chart />

@@ -18,7 +18,8 @@ function useEcharts(renderMode: RendererType = 'canvas') {
   const isInit = computed(() => echartsDom.value && echartsInstance.value)
 
   const initializeInstance = async () => {
-    if (isInit.value) return
+    if (isInit.value)
+      return
 
     await nextTick()
 
@@ -30,12 +31,14 @@ function useEcharts(renderMode: RendererType = 'canvas') {
   const render = async (options: ECOption) => {
     currentOptions.value = options
     await asyncWait(0)
-    if (!isInit.value) await initializeInstance()
+    if (!isInit.value)
+      await initializeInstance()
     echartsInstance.value?.setOption(options)
   }
 
   const dispose = () => {
-    if (!echartsInstance.value) return
+    if (!echartsInstance.value)
+      return
     echartsInstance.value.dispose()
     echartsInstance.value = undefined
   }
@@ -53,7 +56,8 @@ function useEcharts(renderMode: RendererType = 'canvas') {
 
   scope.run(() => {
     watch(() => appStore.themeMode, () => {
-      if (!currentOptions.value) return
+      if (!currentOptions.value)
+        return
       dispose()
       void render(currentOptions.value)
     })

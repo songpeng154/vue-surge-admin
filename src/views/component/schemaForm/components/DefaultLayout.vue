@@ -355,12 +355,12 @@ function to() {
       <n-button @click="to">
         test
       </n-button>
-      <div class="h-full overflow-auto p-24px">
+      <div class="p-24px h-full overflow-auto">
         <pre>{{ JSON.stringify(form, null, 2) }}</pre>
       </div>
     </template>
     <template #2>
-      <div class="h-full overflow-auto p-24px">
+      <div class="p-24px h-full overflow-auto">
         <schema-form
           ref="test"
           v-model:model="form"
@@ -368,12 +368,12 @@ function to() {
           show-require-mark
         >
           <template #test>
-            <div class="h-full w-full flex-center bg-primary p-5 text-white">
+            <div class="text-white p-5 bg-primary flex-center h-full w-full">
               这是一个<span class="text-black">包含</span>FormItem自定义插槽
             </div>
           </template>
           <template #test2>
-            <div class="h-full flex-center bg-primary p-5 text-white">
+            <div class="text-white p-5 bg-primary flex-center h-full">
               这是一个<span class="text-black">不包含</span>FormItem自定义插槽
             </div>
           </template>

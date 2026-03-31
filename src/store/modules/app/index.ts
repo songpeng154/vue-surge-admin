@@ -1,18 +1,18 @@
 import type { GlobalThemeOverrides } from 'naive-ui'
 import type { AppStore } from '@/store/modules/app/type'
 import { generate } from '@ant-design/colors'
-import { cloneDeep, merge } from 'es-toolkit'
+import { cloneDeep, merge, omit } from 'es-toolkit'
 import { darkTheme, lightTheme, useOsTheme } from 'naive-ui'
 import { defineStore } from 'pinia'
 import AppConstant from '@/constant/app'
 import breakpoint from '@/hooks/common/breakpoint.ts'
 import { appCache } from '@/store/caches'
-import { setCSSVariables, temporaryClearTransition, toKebabCase } from '@/utils'
+import { generateCssVariableString, injectCSS, temporaryClearTransition } from '@/utils'
 
 // 初始APP STORE
 export const initialAppStore: AppStore = {
   // 主题颜色
-  themeColor: AppConstant.PRIMARY_COLOR,
+  themeColor: AppConstant.THEME.colors.primary,
   // 主题模式
   themeMode: 'light',
   // 主题模式跟随系统
@@ -77,127 +77,177 @@ const useAppStore = defineStore('App', () => {
   const dynamicSidebarWidth = computed(() => appStore.isCollapsedSidebar ? appStore.collapsedSidebarWidth : appStore.sidebarWidth)
   // 动态混合侧边栏宽度
   const dynamicMixSidebarWidth = computed(() => appStore.isCollapsedMixSidebar ? appStore.collapsedSidebarWidth : appStore.mixSidebarWidth)
+  // 中性主题
+  const neuterTheme = computed(() => AppConstant.THEME.modes[appStore.themeMode])
+  // 主题调色板
+  const themePalettes = computed(() => {
+    return Object.entries(AppConstant.THEME.colors).reduce<ThemePalettes>((gradient, [key, value]) => {
+      // 生成色板
+      const palette = generatePalette(value)
+      // 映射梯度
+      gradient[key] = paletteMapGradientColor(palette)
+      return gradient
+    }, {} as ThemePalettes)
+  })
   // naive主题
   const naiveTheme = computed(() => isLight.value ? lightTheme : darkTheme)
-  // 主题色色板
-  const primaryColorsPalette = computed(() => generate(appStore.themeColor, {
-    theme: isDark.value ? 'dark' : 'default',
-  }))
   // 是否小屏幕
   const isSmallScreen = computed(() => smaller('sm').value)
 
+  const createToggle = (key: keyof AppStore) => (val?: boolean) => {
+    (appStore[key] as boolean) = val ?? !(appStore[key] as boolean)
+  }
+
   // 切换Sidebar折叠
-  const toggleSidebarCollapsed = (isCollapsed?: boolean) => {
-    appStore.isCollapsedSidebar = isCollapsed ?? !appStore.isCollapsedSidebar
-  }
-
+  const toggleSidebarCollapsed = createToggle('isCollapsedSidebar')
   // 切换移动端Sidebar可见
-  const toggleMobileSidebarVisible = (isVisible?: boolean) => {
-    appStore.mobileSidebarVisible = isVisible ?? !appStore.mobileSidebarVisible
-  }
-
+  const toggleMobileSidebarVisible = createToggle('mobileSidebarVisible')
   // 切换混合Sidebar折叠
-  const toggleMixSidebarCollapsed = (isCollapsed?: boolean) => {
-    appStore.isCollapsedMixSidebar = isCollapsed ?? !appStore.isCollapsedMixSidebar
-  }
-
+  const toggleMixSidebarCollapsed = createToggle('isCollapsedMixSidebar')
   // 切换混合SidebarDrawer可见
-  const toggleMixSidebarDrawerVisible = (isVisible?: boolean) => {
-    appStore.mixSidebarDrawerVisible = isVisible ?? !appStore.mixSidebarDrawerVisible
-  }
-
-  // 切换混合SidebarDrawer可见
-  const toggleFixedMixSidebarDrawer = (isFixedMix?: boolean) => {
-    appStore.isFixedMixSidebarDrawer = isFixedMix ?? !appStore.isFixedMixSidebarDrawer
-  }
-
+  const toggleMixSidebarDrawerVisible = createToggle('mixSidebarDrawerVisible')
+  // 切换混合SidebarDrawer固定
+  const toggleFixedMixSidebarDrawer = createToggle('isFixedMixSidebarDrawer')
   // 切换全屏loading
-  const toggleFullScreenLoading = (isShow?: boolean) => {
-    appStore.fullScreenLoading = isShow ?? !appStore.fullScreenLoading
-  }
+  const toggleFullScreenLoading = createToggle('fullScreenLoading')
 
-  // 生成主题css变量
-  const generateThemeCSSVariables = (theme: Theme & NeutralTheme) => {
-    Object.keys(theme).forEach((key) => {
-      const variable = Object.keys(theme[key]).reduce((obj, item) => {
-        obj[`${toKebabCase(key)}-${item}`] = theme[key][item]
-        return obj
-      }, {})
-      setCSSVariables(variable)
+  // 生成色板
+  function generatePalette(color: string) {
+    return generate(color, {
+      theme: isDark.value ? 'dark' : 'default',
+      backgroundColor: neuterTheme.value.backgroundColor?.layout,
     })
   }
 
-  // 生成色板CSS变量
-  const generatePaletteCSSVariables = (name: string, colors: string[]) => {
-    const variable = colors.reduce((obj, item, i) => {
-      obj[`${name}-${i}`] = item
-      return obj
-    }, {})
-    setCSSVariables(variable)
+  // 生成 CSS 变量
+  function generateCssVars(theme: Readonly<any>) {
+    return Object
+      .entries(theme)
+      .map(([key, value]) => generateCssVariableString(value, key, ':root'))
+  }
+
+  // 调色板映射为梯度颜色
+  function paletteMapGradientColor(palette: string[]): Palettes {
+    return {
+      shallow: palette[0],
+      shallowHover: palette[1],
+      border: palette[2],
+      borderHover: palette[3],
+      hover: palette[4],
+      main: palette[5],
+      active: palette[6],
+      textHover: palette[7],
+      text: palette[8],
+      textActive: palette[9],
+    }
   }
 
   // 适配 Naive 主题
-  const adaptNaiveTheme = (gradientTheme: string[], {
-    backgroundColor,
-    textColor,
-    borderColor,
-    borderRadius,
-    textSize,
-  }: Theme & NeutralTheme) => {
+  function adaptNaiveTheme(theme: AppTheme, palettes: ThemePalettes, neutralTheme: NeutralTheme) {
     const naiveThemeOverride: GlobalThemeOverrides = {
-      common: {
-        /* 主题色 */
-        primaryColor: gradientTheme[5],
-        primaryColorHover: gradientTheme[4],
-        primaryColorPressed: gradientTheme[5],
-        primaryColorSuppl: gradientTheme[6],
-        /* 文字颜色 */
-        textColor1: textColor?.base,
-        textColor2: textColor?.secondary,
-        textColor3: textColor?.tertiary,
-        textColorDisabled: textColor?.disabled,
-        /* 背景颜色 */
-        bodyColor: backgroundColor?.layout,
-        cardColor: backgroundColor?.container,
-        modalColor: backgroundColor?.layer,
-        invertedColor: backgroundColor?.inverted,
-        popoverColor: backgroundColor?.layer,
-        /* 边框颜色 */
-        borderColor: borderColor?.base,
-        /* 字体大小 */
-        fontSize: textSize?.md,
-        fontSizeMini: textSize?.sm,
-        fontSizeTiny: textSize?.sm,
-        fontSizeSmall: textSize?.sm,
-        fontSizeLarge: textSize?.lg,
-        fontSizeHuge: textSize?.lg,
-        /* 边框圆角 */
-        borderRadius: borderRadius?.md,
-        borderRadiusSmall: borderRadius?.sm,
-      },
       Layout: {
-        textColorInverted: textColor?.inverted,
-        siderBorderColorInverted: borderColor?.inverted,
-        headerBorderColorInverted: borderColor?.inverted,
+        textColorInverted: neutralTheme.textColor.inverted,
+        siderBorderColorInverted: neutralTheme.borderColor.inverted,
+        headerBorderColorInverted: neutralTheme.borderColor.inverted,
+        footerBorderColorInverted: neutralTheme.borderColor.inverted,
       },
-      Button: {},
+      common: {
+        // ==============================
+        // 1. 品牌色 & 语义色 (映射色板)
+        // ==============================
+
+        // 主色 (Primary)
+        primaryColor: palettes.primary.main,
+        primaryColorHover: palettes.primary.hover,
+        primaryColorPressed: palettes.primary.active,
+        primaryColorSuppl: palettes.primary.shallowHover, // 补充色，Naive 中常用于次要按钮的悬浮色
+
+        // 成功色 (Success)
+        successColor: palettes.success.main,
+        successColorHover: palettes.success.hover,
+        successColorPressed: palettes.success.active,
+        successColorSuppl: palettes.success.shallowHover,
+
+        // 警告色 (Warning)
+        warningColor: palettes.warning.main,
+        warningColorHover: palettes.warning.hover,
+        warningColorPressed: palettes.warning.active,
+        warningColorSuppl: palettes.warning.shallowHover,
+
+        // 错误色 (Error)
+        errorColor: palettes.error.main,
+        errorColorHover: palettes.error.hover,
+        errorColorPressed: palettes.error.active,
+        errorColorSuppl: palettes.error.shallowHover,
+
+        // 提示色 (Info)
+        infoColor: palettes.info.main,
+        infoColorHover: palettes.info.hover,
+        infoColorPressed: palettes.info.active,
+        infoColorSuppl: palettes.info.shallowHover,
+
+        // ==============================
+        // 2. 中性色 (文本、背景、边框)
+        // ==============================
+
+        // 文本颜色
+        textColorBase: neutralTheme.textColor.main,
+        textColor1: neutralTheme.textColor.main, // 一级文本 (标题)
+        textColor2: neutralTheme.textColor.secondary, // 二级文本 (正文)
+        textColor3: neutralTheme.textColor.tertiary, // 三级文本 (辅助)
+        textColorDisabled: neutralTheme.textColor.disabled, // 禁用文本
+
+        // 背景颜色
+        bodyColor: neutralTheme.backgroundColor.layout, // 页面大背景
+        cardColor: neutralTheme.backgroundColor.container, // 卡片/面板背景
+        popoverColor: neutralTheme.backgroundColor.layer, // 弹出层/下拉菜单背景
+        modalColor: neutralTheme.backgroundColor.layer, // 模态框背景
+        invertedColor: neutralTheme.backgroundColor.inverted,
+
+        // 交互填充色
+        hoverColor: neutralTheme.fillColor.secondary, // 元素悬浮填充
+        pressedColor: neutralTheme.fillColor.main, // 元素点击填充
+        actionColor: neutralTheme.fillColor.tertiary, // 表头/斑马纹等次要背景
+
+        // 边框颜色
+        borderColor: neutralTheme.borderColor.main, // 标准边框
+        dividerColor: neutralTheme.borderColor.secondary, // 分割线边框
+
+        // ==============================
+        // 3. 基础排版与几何属性
+        // ==============================
+
+        // 边框圆角
+        borderRadiusSmall: theme.borderRadius.sm,
+        borderRadius: theme.borderRadius.md,
+
+        // 字体大小
+        fontSizeSmall: theme.textSize.sm,
+        fontSize: theme.textSize.md,
+        fontSizeLarge: theme.textSize.lg,
+        fontSizeHuge: theme.textSize.xl,
+      },
     }
     themeOverrides.value = merge(naiveThemeOverride, AppConstant.NAIVE_THEME_CONFIG[appStore.themeMode])
   }
 
   // 更新主题
-  const updateTheme = () => {
-    // 中性主题
-    const neuterTheme = AppConstant.THEME_MODE_CONFIG[appStore.themeMode]
-    // 合并主题
-    const mergeTheme = merge(AppConstant.THEME, neuterTheme)
+  function updateTheme() {
+    const baseTheme = omit(AppConstant.THEME, ['colors', 'breakpoints', 'modes'])
 
-    // 生成主题色CSS变量
-    generatePaletteCSSVariables('primary', primaryColorsPalette.value)
-    // 生成主题CSS变量
-    generateThemeCSSVariables(mergeTheme)
+    // 生成基础 CSS 变量
+    const baseCssVars = generateCssVars(baseTheme)
+    // 生成主题色 CSS 变量
+    const themeColorCssVars = generateCssVars(themePalettes.value)
+    // 生成中性色 CSS 变量
+    const neuterThemeCssVars = generateCssVars(neuterTheme.value)
+
+    const cssVarsString = [...baseCssVars, ...themeColorCssVars, ...neuterThemeCssVars].join('\n')
+
+    injectCSS(cssVarsString, 'theme')
+
     // 适配 Naive 主题
-    adaptNaiveTheme(primaryColorsPalette.value, mergeTheme)
+    adaptNaiveTheme(AppConstant.THEME, themePalettes.value, neuterTheme.value)
   }
 
   // 设置主题颜色
@@ -217,7 +267,8 @@ const useAppStore = defineStore('App', () => {
     await nextTick()
 
     // 检查浏览器是否支持 View Transition API
-    if (!document.startViewTransition) return toggleThemeMode(mode)
+    if (!document.startViewTransition)
+      return toggleThemeMode(mode)
 
     // 使用 View Transition API 切换主题模式
     const transition = document.startViewTransition(() => {
@@ -273,7 +324,6 @@ const useAppStore = defineStore('App', () => {
     dynamicMixSidebarWidth,
     naiveTheme,
     themeOverrides,
-    primaryColorsPalette,
     isSmallScreen,
     setThemeColor,
     toggleThemeMode,

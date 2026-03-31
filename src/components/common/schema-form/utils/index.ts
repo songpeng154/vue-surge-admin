@@ -174,8 +174,9 @@ export function generateRule(label: string, component: ComponentsName): FormItem
       if (value === null
         || value === undefined
         || value === ''
-        || (isArray(value) && value.length === 0))
+        || (isArray(value) && value.length === 0)) {
         return new Error(message)
+      }
 
       return true
     },

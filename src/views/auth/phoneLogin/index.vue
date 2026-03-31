@@ -40,7 +40,7 @@ function handleLogin() {
 </script>
 
 <template>
-  <div class="h-full flex flex-col justify-center">
+  <div class="flex flex-col h-full justify-center">
     <h1 class="mb-[24px]">
       手机号登录📱
     </h1>

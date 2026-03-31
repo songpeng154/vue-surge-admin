@@ -8,9 +8,9 @@ import type {
 } from '@/components/common/schema-form/types/group.ts'
 import { isBoolean, isFunction } from 'es-toolkit'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import expose from '@/components/common/schema-form/hooks/expose.ts'
-import method from '@/components/common/schema-form/hooks/method.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<GroupSchemaFormProps>(), {
   autoPlaceholder: true,
@@ -47,12 +47,12 @@ const schema = defineModel<UnwrapGroupSchema[]>('schema', { required: true })
 
 // 提供Schema上下文
 useProvideSchemaFormContext(props, model)
-const formProps = omitProps(props, ['schema'])
-const formContentSlots = omitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'groupTitle', 'collapsedButton'])
+const formProps = useOmitProps(props, ['schema'])
+const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'groupTitle', 'collapsedButton'])
 // 通用的导出方法
-const { formRef, commonExpose } = expose()
+const { formRef, commonExpose } = useExpose()
 // 通用方法
-const { handleReset, handleSubmit } = method(props, commonExpose, model)
+const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
 
 const groupSchema = ref<UnwrapGroupSchema[]>([])
 

@@ -14,12 +14,15 @@ export default async function createAuthGuard(
   const tabBarStore = useTabBarStore()
 
   // 忽略鉴权直接放行
-  if (to.meta?.ignoreAuth) return true
+  if (to.meta?.ignoreAuth)
+    return true
 
   // 提取公共的路由鉴权处理逻辑
   const handleRouteAuthMode = async () => {
-    if (authStore.routeAuthMode === 'web') authStore.initFrontRouteAuth()
-    if (authStore.routeAuthMode === 'service') await authStore.initServerRouteAuth()
+    if (authStore.routeAuthMode === 'web')
+      authStore.initFrontRouteAuth()
+    if (authStore.routeAuthMode === 'service')
+      await authStore.initServerRouteAuth()
     tabBarStore.initializeTabBar(authStore.$state.routes)
   }
 
@@ -37,7 +40,7 @@ export default async function createAuthGuard(
   }
 
   // 没有鉴权（没有用户信息和角色）
-  if (!authStore.isAuth)
+  if (!authStore.isAuth) {
     try {
       await authStore.getUserinfo()
       await handleRouteAuthMode()
@@ -46,6 +49,7 @@ export default async function createAuthGuard(
     catch (error) {
       return { path: RouterConstant.LOGIN_PATH }
     }
+  }
 
   // 没有生成路由
   if (!authStore.isGeneratedRoutes) {
@@ -71,10 +75,11 @@ export default async function createAuthGuard(
   }
 
   // 从登录页跳转到其他页面时，如果目标页面不存在，则跳转到首页
-  if (from.path.startsWith(RouterConstant.AUTH_ROUTE) && from.query.redirect)
+  if (from.path.startsWith(RouterConstant.AUTH_ROUTE) && from.query.redirect) {
     return router.hasRoute(to.name as string)
       ? true
       : { path: RouterConstant.HOME_PATH, replace: true }
+  }
 
   // 全部校验通过，正常放行
   return true

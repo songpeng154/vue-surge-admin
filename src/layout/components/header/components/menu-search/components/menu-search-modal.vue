@@ -31,12 +31,13 @@ function flattenMenu(menus: AppRouteRecordRaw[]): MenuSearchOption[] {
     menus.forEach((menu) => {
       const icon = iconName || menu.meta?.icon
       const menuNames = menuNameList || []
-      if (!menu.children?.length)
+      if (!menu.children?.length) {
         menuList.push({
           icon,
           labels: [...menuNames, menu.meta?.title as string],
           path: menu.path,
         })
+      }
 
       else {
         menuNames.push(menu.meta?.title as string)

@@ -16,7 +16,7 @@ export const rSuccess = (data: unknown) => r(200, '操作成功', data)
 export const rFailure = (data: unknown) => r(500, '操作失败', data)
 
 // 生成分页数据
-export const generatePagedData = (page: number = 1, pageSize: number = 10, total: number = 100) => {
+export function generatePagedData(page: number = 1, pageSize: number = 10, total: number = 100) {
   // 假设我们总共有 100 条数据
   const totalItems = total
   const totalPages = Math.ceil(totalItems / pageSize)
@@ -26,13 +26,13 @@ export const generatePagedData = (page: number = 1, pageSize: number = 10, total
   const endIdx = Math.min(startIdx + pageSize, totalItems)
 
   // 生成当前页的数据
-  const data = Array.from({ length: endIdx - startIdx }, () => ({
+  const data = Array.from({ length: endIdx - startIdx }).fill({
     id: faker.string.ulid(),
     name: faker.person.fullName(),
     email: faker.internet.email(),
     phone: faker.phone.number(),
     address: faker.location.secondaryAddress(),
-  }))
+  })
 
   return {
     list: data,

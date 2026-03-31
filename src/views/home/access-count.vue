@@ -10,7 +10,7 @@ const { run } = useRequest(SystemApi.getAccessCount, {
   manual: true,
 })
 
-const getOptions = (label: string[], value: number[]): ECOption => {
+function getOptions(label: string[], value: number[]): ECOption {
   return {
     grid: {
       top: 20,
@@ -46,7 +46,8 @@ const getOptions = (label: string[], value: number[]): ECOption => {
 
 onMounted(() => {
   run().then((res) => {
-    if (!res) return
+    if (!res)
+      return
     const labelList = res.map(item => item.label)
     const valueList = res.map(item => item.value)
     render(getOptions(labelList, valueList))

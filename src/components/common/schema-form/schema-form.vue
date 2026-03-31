@@ -2,9 +2,9 @@
 import type { SchemaFormExpose, SchemaFormProps, SchemaFormSlots } from '@/components/common/schema-form/types/base.ts'
 import type { UnwrapSchema } from '@/components/common/schema-form/types/common.ts'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import expose from '@/components/common/schema-form/hooks/expose.ts'
-import method from '@/components/common/schema-form/hooks/method.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<SchemaFormProps>(), {
   autoPlaceholder: true,
@@ -37,11 +37,11 @@ const schema = defineModel<UnwrapSchema[]>('schema', { required: true })
 
 // 提供Schema上下文
 useProvideSchemaFormContext(props, model)
-const formProps = omitProps(props, ['schema'])
-const formContentSlots = omitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
+const formProps = useOmitProps(props, ['schema'])
+const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
 // 通用方法
-const { formRef, commonExpose } = expose()
-const { handleReset, handleSubmit } = method(props, commonExpose, model)
+const { formRef, commonExpose } = useExpose()
+const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
 
 defineExpose<SchemaFormExpose>(commonExpose)
 </script>
@@ -60,7 +60,7 @@ defineExpose<SchemaFormExpose>(commonExpose)
         v-if="!props.hideActionButton"
         suffix
         :span="24"
-        class="flex items-center justify-end gap-[12px]"
+        class="flex gap-[12px] items-center justify-end"
       >
         <slot name="buttonBefore" />
         <slot name="customActionButton">

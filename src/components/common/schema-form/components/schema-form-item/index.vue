@@ -20,7 +20,7 @@ import {
 } from '@/components/common/schema-form/utils'
 import { SCHEMA_RENDER_COMPONENTS } from '@/components/common/schema-form/utils/components'
 import elementIndex from '@/hooks/common/element-index.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 import renderIcon from '@/hooks/components/render-icon.ts'
 
 const props = defineProps<SchemaFormItemProps>()
@@ -58,7 +58,7 @@ function callbackParamsFunction<T = never>(value: T | CallbackParamsFunction<any
 }
 
 const FormItem = defineComponent(() => {
-  const formItemProps = omitProps(schema.value, [
+  const formItemProps = useOmitProps(schema.value, [
     'field',
     'component',
     'label',
@@ -120,8 +120,9 @@ const FormItem = defineComponent(() => {
         mapProps.startPlaceholder = placeholder[0]
         mapProps.endPlaceholder = placeholder[1]
       }
-      else
+      else {
         mapProps.placeholder = placeholder
+      }
     }
 
     // 映射placeholder
@@ -132,7 +133,8 @@ const FormItem = defineComponent(() => {
     if (
       (startPlaceholder || endPlaceholder)
       && isDateComponent
-      && (componentProps as Recordable)?.type.includes('range')) {
+      && (componentProps as Recordable)?.type.includes('range')
+    ) {
       if (startPlaceholder)
         mapProps.startPlaceholder = startPlaceholder
       if (endPlaceholder)

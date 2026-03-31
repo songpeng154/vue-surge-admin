@@ -16,7 +16,7 @@ const { run: getTechnologyStack } = useRequest(SystemApi.getTechnologyStack, {
   manual: true,
 })
 
-const getUsageCountOptions = (label: string[], value: number[]): ECOption => {
+function getUsageCountOptions(label: string[], value: number[]): ECOption {
   return {
     grid: {
       top: 20,
@@ -57,7 +57,7 @@ const getUsageCountOptions = (label: string[], value: number[]): ECOption => {
   }
 }
 
-const getTechnologyStackOptions = (data: { name: string, value: number }[]): ECOption => {
+function getTechnologyStackOptions(data: { name: string, value: number }[]): ECOption {
   return {
     grid: {
       top: 20,
@@ -88,13 +88,15 @@ const getTechnologyStackOptions = (data: { name: string, value: number }[]): ECO
 
 onMounted(() => {
   getUsageCount().then((res) => {
-    if (!res) return
+    if (!res)
+      return
     const labelList = res.map(item => item.label)
     const valueList = res.map(item => item.value)
     renderUsageCount(getUsageCountOptions(labelList, valueList))
   })
   getTechnologyStack().then((res) => {
-    if (!res) return
+    if (!res)
+      return
     renderTechnologyStack(getTechnologyStackOptions(res))
   })
 })

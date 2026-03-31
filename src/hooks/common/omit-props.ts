@@ -6,8 +6,8 @@ import { computed } from 'vue'
  * @param value 目标对象
  * @param keys 省略的key
  */
-function omitProps<T extends Recordable, K extends keyof T>(value: T, keys: K[]) {
+function useOmitProps<T extends Recordable, K extends keyof T>(value: T, keys: K[]) {
   return computed(() => omit(value, keys))
 }
 
-export default omitProps
+export default useOmitProps

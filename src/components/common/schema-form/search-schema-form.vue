@@ -7,9 +7,9 @@ import type {
 } from '@/components/common/schema-form/types/search.ts'
 import { take } from 'es-toolkit'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import expose from '@/components/common/schema-form/hooks/expose.ts'
-import method from '@/components/common/schema-form/hooks/method.ts'
-import omitProps from '@/hooks/common/omit-props.ts'
+import useExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<SearchSchemaFormProps>(), {
   autoPlaceholder: true,
@@ -57,12 +57,12 @@ const collapsed = defineModel<boolean>('collapsed', { default: true })
 
 // 提供Schema上下文
 useProvideSchemaFormContext(props, model)
-const formProps = omitProps(props, ['searchShowNumber', 'schema', 'collapsed', 'enableCollapsed', 'collapsedText', 'unCollapsedText'])
-const formContentSlots = omitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
+const formProps = useOmitProps(props, ['searchShowNumber', 'schema', 'collapsed', 'enableCollapsed', 'collapsedText', 'unCollapsedText'])
+const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
 
 // 通用方法
-const { formRef, commonExpose } = expose()
-const { handleReset, handleSubmit } = method(props, commonExpose, model)
+const { formRef, commonExpose } = useExpose()
+const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
 
 // 搜索Schema
 const searchSchemas = computed(() => {
@@ -99,7 +99,7 @@ defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })
         :span="4"
         suffix
       >
-        <div class="flex justify-end gap-[12px]">
+        <div class="flex gap-[12px] justify-end">
           <slot name="buttonBefore" />
           <slot name="customActionButton">
             <n-button

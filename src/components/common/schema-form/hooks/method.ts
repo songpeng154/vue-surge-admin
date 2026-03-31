@@ -1,15 +1,17 @@
 import type { ModelRef } from 'vue'
 import type { SchemaFormCommonExpose, SchemaFormCommonProps } from '@/components/common/schema-form/types/common.ts'
 
-function method(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose, model: ModelRef<Recordable>) {
+function useMethod(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose, model: ModelRef<Recordable>) {
   const handleSubmit = () => {
-    if (props.onSubmit)
+    if (props.onSubmit) {
       props.onSubmit(expose.validate, model.value)
+    }
 
-    else
+    else {
       expose.validate()
         .then(() => props.onFinish?.(model.value))
         .catch(err => props.onFinishFailed?.(err))
+    }
   }
 
   const handleReset = () => {
@@ -18,4 +20,4 @@ function method(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose, mo
   return { handleSubmit, handleReset }
 }
 
-export default method
+export default useMethod

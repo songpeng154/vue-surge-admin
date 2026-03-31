@@ -1,4 +1,8 @@
 @use "initialize";
-@use "animation/index";
+@use "animation/index" as animation;
 @use "view-transition";
 @use "naive-components";
+
+a{
+  background: @var;
+}

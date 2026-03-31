@@ -12,6 +12,7 @@ const isHide = computed(() => (appStore.isCollapsedSidebar || appStore.layoutMod
   <div class="logo" :style="{ height: `${appStore.headerHeight}px` }">
     <img
       height="35"
+      width="35"
       src="/logo.svg"
       :alt="VITE_APP_TITLE"
     >

@@ -82,8 +82,8 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="h-full flex flex-col justify-center">
-    <h1 class="mb-[24px]">
+  <div class="flex flex-col h-full justify-center">
+    <h1 class="text-[24px] mb-[24px]">
       Hi 欢迎回来👋
     </h1>
     <schema-form
@@ -100,7 +100,7 @@ async function handleLogin() {
           justify="space-between"
         >
           <n-checkbox>记住密码</n-checkbox>
-          <span class="cursor-pointer text-primary">忘记密码？</span>
+          <span class="text-primary cursor-pointer">忘记密码？</span>
         </n-flex>
       </template>
       <template #submit>

@@ -26,9 +26,6 @@ export default defineConfig(({ mode }) => {
         '#': fileURLToPath(new URL('./types', import.meta.url)),
       },
     },
-    devtools: {
-      enabled: true,
-    },
     build: {
       reportCompressedSize: true,
       sourcemap: false,

@@ -38,16 +38,16 @@ const countList = computed(() => {
   <grid :x-gap="10" :y-gap="10" :cols="{ xs: 4, sm: 8, md: 8, lg: 16, xl: 16 }">
     <grid-item v-for="(item, i) in countList" :key="i" :span="4">
       <n-card hoverable>
-        <div class="flex items-center gap-[10px]">
+        <div class="flex gap-[10px] items-center">
           <icon :icon="item.icon" size="60px" />
           <div class="flex-1">
-            <div class="flex items-center justify-between text-lg font-bold">
+            <div class="text-lg font-bold flex items-center justify-between">
               <n-number-animation
                 show-separator
                 :from="0"
                 :to="item.count"
               />
-              <div class="rounded-md bg-fill-secondary p-5px text-xs font-400">
+              <div class="text-xs font-400 p-5px rounded-md bg-fill-secondary">
                 <span v-if="item.undulations > 0" class="text-green-5">+{{ item.undulations }}%</span>
                 <span v-else class="text-red">{{ item.undulations }}%</span>
               </div>

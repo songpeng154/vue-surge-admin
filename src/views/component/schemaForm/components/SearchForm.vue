@@ -207,12 +207,12 @@ const schema = ref<DefineSchema<typeof form.value>[]>([
     :min="0.20"
   >
     <template #1>
-      <div class="h-full overflow-auto p-24px">
+      <div class="p-24px h-full overflow-auto">
         <pre>{{ JSON.stringify(form, null, 2) }}</pre>
       </div>
     </template>
     <template #2>
-      <div class="h-full overflow-auto p-24px">
+      <div class="p-24px h-full overflow-auto">
         <n-flex class="mb-5">
           <n-button @click="toggleEnableCollapsed()">
             {{ isEnableCollapsed ? '关闭' : '开启' }} 折叠功能

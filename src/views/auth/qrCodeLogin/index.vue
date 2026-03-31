@@ -6,7 +6,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="h-full flex flex-col justify-center">
+  <div class="flex flex-col h-full justify-center">
     <h1 class="mb-[24px]">
       二维码登录🤳🏻
     </h1>
