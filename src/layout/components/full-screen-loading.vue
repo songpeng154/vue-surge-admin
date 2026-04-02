@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="bg-layout flex-center flex-1 w-h-full bottom-0 left-0 right-0 top-0 pos-absolute z-10 overflow-hidden">
+  <div class="pos-absolute bottom-0 left-0 right-0 top-0 z-10 size-full flex-center flex-1 overflow-hidden bg-layout">
     <div class="loading-container">
       <div class="loading">
         <div />

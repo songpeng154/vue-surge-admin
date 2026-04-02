@@ -16,6 +16,7 @@ const service = new NormAxios<Result>({
     },
     async onResponse(response) {
       const { code, msg, result } = response.data
+      // TODO:处理文件下载，后端返回文件流
       // 响应内容
       const responseContent: ResponseContent<Result, typeof result> = [result, undefined, response]
       // 是否取消消息提示

@@ -137,7 +137,7 @@ watch(tabBarStore.tabs, () => {
 <style lang="scss" scoped>
 .tabBar {
   width: 100%;
-  background: theme('backgroundColor.layout');
+  background: var(--background-color-layout);
   padding: 0 10px;
   display: flex;
   justify-content: space-between;
@@ -151,14 +151,14 @@ watch(tabBarStore.tabs, () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: theme('backgroundColor.container');
-    border-radius: theme('borderRadius.md');
-    border: 1px solid theme('borderColor.tertiary');
+    background: var(--background-color-container);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color-tertiary);
     user-select: none;
     cursor: pointer;
     height: 30px;
     flex-shrink: 0;
-    color: theme('textColor.base');
+    color: var(--text-color-main);
     gap: 5px;
     font-size: 14px;
     white-space: nowrap;
@@ -170,7 +170,7 @@ watch(tabBarStore.tabs, () => {
 
     &.active {
       color: white;
-      background: theme('colors.primary');
+      background: var(--primary-main);
 
       .tabBar-item-clear {
         color: white !important;
@@ -180,10 +180,10 @@ watch(tabBarStore.tabs, () => {
     &-clear {
       transition: 0.1s;
       margin-right: -5px;
-      color: theme('textColor.tertiary');
+      color: var(--text-color-tertiary);
 
       &:hover {
-        color: theme('textColor.base');
+        color: var(--text-color-main);
       }
     }
   }

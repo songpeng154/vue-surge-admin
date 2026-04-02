@@ -1,0 +1,111 @@
+/**
+ * ========================================================================
+ * IDE CSS 变量代码提示占位文件
+ * 说明：此文件仅用于让 IDEA / WebStorm 建立索引并提供代码提示。
+ * 不需要真正在 main.ts 中 import 它，实际值在 src/constant/app.ts 中设置。
+ * ========================================================================
+ */
+
+:root {
+  /* ==================== 1. 基础色板 (Palettes) ==================== */
+  /* --- Primary (主色) --- */
+  --primary-shallow: #e6f4ff;       /* 主色 - 极浅 */
+  --primary-shallowHover: #bae0ff;  /* 主色 - 浅色悬浮 */
+  --primary-border: #91caff;        /* 主色 - 常规边框 */
+  --primary-borderHover: #69b1ff;   /* 主色 - 边框悬浮 */
+  --primary-hover: #4096ff;         /* 主色 - 悬浮 */
+  --primary-main: #1677ff;          /* 主色 - 核心 */
+  --primary-active: #0958d9;        /* 主色 - 激活/点击 */
+  --primary-text: #1677ff;          /* 主色 - 文本 */
+  --primary-textHover: #4096ff;     /* 主色 - 文本悬浮 */
+  --primary-textActive: #0958d9;    /* 主色 - 文本点击 */
+
+  /* --- Success (成功色) --- */
+  --success-shallow: #f6ffed;
+  --success-shallowHover: #d9f7be;
+  --success-border: #b7eb8f;
+  --success-borderHover: #95de64;
+  --success-hover: #73d13d;
+  --success-main: #52c41a;
+  --success-active: #389e0d;
+  --success-text: #52c41a;
+  --success-textHover: #73d13d;
+  --success-textActive: #389e0d;
+
+  /* --- Warning (警告色) --- */
+  --warning-shallow: #fffbe6;
+  --warning-shallowHover: #fff1b8;
+  --warning-border: #ffe58f;
+  --warning-borderHover: #ffd666;
+  --warning-hover: #ffc53d;
+  --warning-main: #faad14;
+  --warning-active: #d48806;
+  --warning-text: #faad14;
+  --warning-textHover: #ffc53d;
+  --warning-textActive: #d48806;
+
+  /* --- Error (错误色) --- */
+  --error-shallow: #fff2f0;
+  --error-shallowHover: #ffccc7;
+  --error-border: #ffa39e;
+  --error-borderHover: #ff7875;
+  --error-hover: #ff4d4f;
+  --error-main: #f5222d;
+  --error-active: #cf1322;
+  --error-text: #f5222d;
+  --error-textHover: #ff4d4f;
+  --error-textActive: #cf1322;
+
+  /* --- Info (信息色) --- */
+  --info-shallow: #e6f4ff;
+  --info-shallowHover: #bae0ff;
+  --info-border: #91caff;
+  --info-borderHover: #69b1ff;
+  --info-hover: #4096ff;
+  --info-main: #1677ff;
+  --info-active: #0958d9;
+  --info-text: #1677ff;
+  --info-textHover: #4096ff;
+  --info-textActive: #0958d9;
+
+
+  /* --- 文字颜色 (Text) --- */
+  --text-color-main: #1f2937;       /* 一级/核心文本颜色 */
+  --text-color-secondary: #4b5563;  /* 二级/次要文本颜色 */
+  --text-color-tertiary: #9ca3af;   /* 三级/辅助文本颜色 */
+  --text-color-disabled: #d1d5db;   /* 禁用状态文本颜色 */
+  --text-color-inverted: #ffffff;   /* 反转文本颜色 */
+
+  /* --- 背景颜色 (Background) --- */
+  --background-color-layout: #f3f4f6;       /* 底层/整体布局背景 */
+  --background-color-container: #ffffff;    /* 容器/卡片/内容区背景 */
+  --background-color-layer: #ffffff;        /* 浮层/弹窗背景 */
+  --background-color-mask: rgba(0,0,0,0.5); /* 遮罩层背景 */
+  --background-color-inverted: #1f2937;     /* 反转背景色 */
+
+  /* --- 边框颜色 (Border) --- */
+  --border-color-main: #d1d5db;     /* 一级/强边框颜色 */
+  --border-color-secondary: #e5e7eb;/* 二级/常规边框颜色 */
+  --border-color-tertiary: #f3f4f6; /* 三级/极弱边框颜色 */
+  --border-color-inverted: #374151; /* 反转边框颜色 */
+
+  /* --- 填充颜色 (Fill) --- */
+  --fill-color-main: #e5e7eb;       /* 一级填充 */
+  --fill-color-secondary: #f3f4f6;  /* 二级填充 */
+  --fill-color-tertiary: #f9fafb;   /* 三级填充 */
+  --fill-color-inverted: #374151;   /* 反转填充 */
+
+
+  /* ==================== 3. 尺寸规范 (Sizes) ==================== */
+  /* --- 字体大小 --- */
+  --text-size-sm: 12px;
+  --text-size-md: 14px;
+  --text-size-lg: 16px;
+  --text-size-xl: 20px;
+
+  /* --- 圆角大小 --- */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+}

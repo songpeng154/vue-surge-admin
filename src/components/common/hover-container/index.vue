@@ -39,7 +39,7 @@ defineEmits<HoverContainerEmits>()
 
 <style scoped lang="scss">
 .iconHoverContainer {
-  border-radius: theme('borderRadius.md');
+  border-radius: var(--border-radius-md);
   padding: 7px;
   display: inline-flex;
   justify-content: center;
@@ -50,11 +50,11 @@ defineEmits<HoverContainerEmits>()
   flex-shrink: 0;
 
   &:hover {
-    background: theme('colors.fill.secondary');
+    background: var(--fill-color-secondary);
   }
 
   &.inverted:hover {
-    background: theme('colors.fill.inverted');
+    background: var(--fill-color-inverted);
   }
 }
 </style>

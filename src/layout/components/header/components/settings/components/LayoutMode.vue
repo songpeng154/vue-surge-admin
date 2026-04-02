@@ -83,22 +83,22 @@ const appStore = useAppStore()
   .mixSide,
   .main {
     border-radius: 2px;
-    background: theme('colors.primaryShallow');
+    background:  var(--primary-shallow);
   }
 
   .header {
     height: 10px;
-    background: theme('colors.primaryShallow');
+    background: var(--primary-shallow);
   }
 
   .primary {
-    background: theme('colors.primary');
+    background: var(--primary-main);
   }
 
   .side {
     width: 13px;
     height: 100%;
-    background: theme('colors.primary');
+    background: var(--primary-main);
   }
 
   .mixSide {
@@ -109,12 +109,12 @@ const appStore = useAppStore()
     div:first-of-type {
       width: 6px;
       height: 100%;
-      background: theme('colors.primary');
+      background: var(--primary-main);
       border-radius: 3px;
     }
 
     div:last-of-type {
-      background: theme('colors.primaryShallow');
+      background: var(--primary-shallow);
       width: 10px;
       height: 100%;
     }

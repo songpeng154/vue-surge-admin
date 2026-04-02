@@ -34,8 +34,8 @@ const authStore = useAuthStore()
   top: 0;
 
   &.inverted {
-    background: theme('backgroundColor.inverted');
-    color: theme('textColor.inverted');
+    background: var(--background-color-inverted);
+    color: var(--text-color-inverted);
   }
 
   &-container {

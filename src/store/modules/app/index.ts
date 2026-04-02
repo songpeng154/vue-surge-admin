@@ -81,7 +81,11 @@ const useAppStore = defineStore('App', () => {
   const neuterTheme = computed(() => AppConstant.THEME.modes[appStore.themeMode])
   // 主题调色板
   const themePalettes = computed(() => {
-    return Object.entries(AppConstant.THEME.colors).reduce<ThemePalettes>((gradient, [key, value]) => {
+    const colors = {
+      ...AppConstant.THEME.colors,
+      primary: appStore.themeColor,
+    }
+    return Object.entries(colors).reduce<ThemePalettes>((gradient, [key, value]) => {
       // 生成色板
       const palette = generatePalette(value)
       // 映射梯度
@@ -159,32 +163,32 @@ const useAppStore = defineStore('App', () => {
         // 主色 (Primary)
         primaryColor: palettes.primary.main,
         primaryColorHover: palettes.primary.hover,
-        primaryColorPressed: palettes.primary.active,
-        primaryColorSuppl: palettes.primary.shallowHover, // 补充色，Naive 中常用于次要按钮的悬浮色
+        primaryColorPressed: palettes.primary.main,
+        primaryColorSuppl: palettes.primary.active,
 
         // 成功色 (Success)
         successColor: palettes.success.main,
         successColorHover: palettes.success.hover,
-        successColorPressed: palettes.success.active,
-        successColorSuppl: palettes.success.shallowHover,
+        successColorPressed: palettes.success.main,
+        successColorSuppl: palettes.success.active,
 
         // 警告色 (Warning)
         warningColor: palettes.warning.main,
         warningColorHover: palettes.warning.hover,
-        warningColorPressed: palettes.warning.active,
-        warningColorSuppl: palettes.warning.shallowHover,
+        warningColorPressed: palettes.warning.main,
+        warningColorSuppl: palettes.warning.active,
 
         // 错误色 (Error)
         errorColor: palettes.error.main,
         errorColorHover: palettes.error.hover,
-        errorColorPressed: palettes.error.active,
-        errorColorSuppl: palettes.error.shallowHover,
+        errorColorPressed: palettes.error.main,
+        errorColorSuppl: palettes.error.active,
 
         // 提示色 (Info)
         infoColor: palettes.info.main,
         infoColorHover: palettes.info.hover,
-        infoColorPressed: palettes.info.active,
-        infoColorSuppl: palettes.info.shallowHover,
+        infoColorPressed: palettes.info.main,
+        infoColorSuppl: palettes.info.active,
 
         // ==============================
         // 2. 中性色 (文本、背景、边框)
@@ -192,26 +196,26 @@ const useAppStore = defineStore('App', () => {
 
         // 文本颜色
         textColorBase: neutralTheme.textColor.main,
-        textColor1: neutralTheme.textColor.main, // 一级文本 (标题)
-        textColor2: neutralTheme.textColor.secondary, // 二级文本 (正文)
-        textColor3: neutralTheme.textColor.tertiary, // 三级文本 (辅助)
-        textColorDisabled: neutralTheme.textColor.disabled, // 禁用文本
+        textColor1: neutralTheme.textColor.main,
+        textColor2: neutralTheme.textColor.secondary,
+        textColor3: neutralTheme.textColor.tertiary,
+        textColorDisabled: neutralTheme.textColor.disabled,
 
         // 背景颜色
-        bodyColor: neutralTheme.backgroundColor.layout, // 页面大背景
-        cardColor: neutralTheme.backgroundColor.container, // 卡片/面板背景
-        popoverColor: neutralTheme.backgroundColor.layer, // 弹出层/下拉菜单背景
-        modalColor: neutralTheme.backgroundColor.layer, // 模态框背景
+        bodyColor: neutralTheme.backgroundColor.layout,
+        cardColor: neutralTheme.backgroundColor.container,
+        popoverColor: neutralTheme.backgroundColor.layer,
+        modalColor: neutralTheme.backgroundColor.layer,
         invertedColor: neutralTheme.backgroundColor.inverted,
 
         // 交互填充色
-        hoverColor: neutralTheme.fillColor.secondary, // 元素悬浮填充
-        pressedColor: neutralTheme.fillColor.main, // 元素点击填充
-        actionColor: neutralTheme.fillColor.tertiary, // 表头/斑马纹等次要背景
+        hoverColor: neutralTheme.fillColor.secondary,
+        pressedColor: neutralTheme.fillColor.main,
+        actionColor: neutralTheme.fillColor.tertiary,
 
-        // 边框颜色
-        borderColor: neutralTheme.borderColor.main, // 标准边框
-        dividerColor: neutralTheme.borderColor.secondary, // 分割线边框
+        // // 边框颜色
+        borderColor: neutralTheme.borderColor.main,
+        dividerColor: neutralTheme.borderColor.secondary,
 
         // ==============================
         // 3. 基础排版与几何属性

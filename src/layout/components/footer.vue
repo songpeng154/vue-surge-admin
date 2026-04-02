@@ -21,7 +21,7 @@ const appStore = useAppStore()
   justify-content: center;
   align-items: center;
   transition: height .2s ease-in-out;
-  background: theme('backgroundColor.container');
+  background:  var(--background-color-container);
   width: 100%;
   flex-shrink: 0;
 }

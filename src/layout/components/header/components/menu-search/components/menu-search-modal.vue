@@ -192,13 +192,13 @@ watch(visible, () => {
     cursor: pointer;
     gap: 15px;
     padding: 15px;
-    border-radius: theme('borderRadius.md');
-    border: 1px solid theme('borderColor.secondary');
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color-secondary);
 
     &.active {
-      background: theme('colors.primaryShallow');
-      color: theme('colors.primary');
-      box-shadow: 5px 5px 5px theme('colors.primaryShallow');
+      background: var(--primary-shallow);
+      color: var(--primary-main);
+      box-shadow: 5px 5px 5px var(--primary-shallow);
     }
 
     svg {
@@ -224,7 +224,7 @@ watch(visible, () => {
     gap: 10px;
 
     &-keys {
-      color: theme('textColor.tertiary');
+      color:  var(--text-color-tertiary);
       display: flex;
       align-items: center;
       gap: 5px;
@@ -232,7 +232,7 @@ watch(visible, () => {
       div {
         display: flex;
         align-items: center;
-        background: theme('colors.fill.secondary');
+        background: var(--fill-color-secondary);
         width: 30px;
         height: 20px;
         justify-content: center;

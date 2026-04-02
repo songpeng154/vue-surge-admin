@@ -33,19 +33,19 @@ const emits = defineEmits<Emits>()
 
 <style lang="scss" scoped>
 .layoutCard {
-  background: theme('backgroundColor.container');
+  background: var(--background-color-container);
   width: 105px;
   height: 85px;
   border-radius: 4px;
   cursor: pointer;
   transition: 0.2s ease-in-out;
-  border: 3px solid theme('colors.primaryShallow');
+  border: 3px solid var(--primary-shallow);
   padding: 3px;
   gap: 4px;
 
   &.active {
-    box-shadow: 5px 5px 5px theme('colors.primaryShallow');
-    border-color: theme('colors.primary');
+    box-shadow: 5px 5px 5px var(--primary-shallow);
+    border-color: var(--primary-main);
   }
 }
 </style>

@@ -38,7 +38,7 @@ function handleAction(key: string) {
 
 <template>
   <n-dropdown :options="actionList" @select="handleAction">
-    <div class="flex-y-center gap-[10px] cursor-pointer">
+    <div class="flex cursor-pointer items-center gap-[10px]">
       <icon
         icon="i-local:avatar"
         size="30px"

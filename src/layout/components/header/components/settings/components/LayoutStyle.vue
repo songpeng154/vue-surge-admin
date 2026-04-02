@@ -82,7 +82,7 @@ $lightColor: #eaeaea;
   .side,
   .main {
     border-radius: 2px;
-    background: theme('colors.primaryShallow');
+    background: var(--primary-shallow);
   }
 
   .header {

@@ -3,7 +3,7 @@
   margin: 0;
   box-sizing: border-box;
   scrollbar-width: thin;
-  scrollbar-color: theme('colors.fill.inverted') transparent !important;
+  scrollbar-color: var(--fill-color-inverted) transparent !important;
 }
 
 html, body, #app {
@@ -13,8 +13,8 @@ html, body, #app {
 }
 
 body {
-  background: theme('backgroundColor.layout');
-  color: theme('textColor.base');
+  background:  var(--background-color-layer);
+  color: var(--text-color-main);
 }
 
 ul, ol, li {
@@ -23,7 +23,7 @@ ul, ol, li {
 
 a {
   text-decoration: none;
-  color: theme('colors.primary');
+  color:  var(--primary-main);
 }
 
 svg {

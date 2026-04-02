@@ -108,7 +108,7 @@ watch(visible, () => {
         <div
           v-for="item in pageIcons"
           :key="item"
-          class="border-base border rounded border-solid flex-center h-[40px] w-[100%] cursor-pointer hover:border-primary"
+          class="border rounded border-solid flex-center h-[40px] w-[100%] cursor-pointer border-main hover:border-primary"
           :class="item === iconValue ? 'border-primary text-primary' : undefined"
           @click="selectIcon(item)"
         >

@@ -2,8 +2,6 @@
 import AccessCount from '@/views/home/access-count.vue'
 import Chart from '@/views/home/chart.vue'
 import Statistics from '@/views/home/statistics.vue'
-
-console.log(location)
 </script>
 
 <template>

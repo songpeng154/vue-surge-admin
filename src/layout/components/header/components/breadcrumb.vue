@@ -51,7 +51,7 @@ watch(() => route.path, () => {
 
   &.inverted {
     :deep(.n-breadcrumb-item__link), :deep(.n-breadcrumb-item__separator) {
-      color: theme('textColor.inverted');
+      color:  var(--text-color-inverted);
     }
   }
 }

@@ -46,7 +46,7 @@ function useEcharts(renderMode: RendererType = 'canvas') {
   const showLoading = () => {
     echartsInstance.value?.showLoading({
       maskColor: getCSSVariable('fill-color-tertiary'),
-      textColor: getCSSVariable('text-color-base'),
+      textColor: getCSSVariable('text-color-main'),
     })
   }
 

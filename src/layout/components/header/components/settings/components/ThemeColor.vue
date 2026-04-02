@@ -26,7 +26,7 @@ const appStore = useAppStore()
 .themeCard {
   width: 20px;
   height: 20px;
-  border-radius: theme('borderRadius.sm');
+  border-radius:  var(--border-radius-sm);
   cursor: pointer;
   display: flex;
   justify-content: center;

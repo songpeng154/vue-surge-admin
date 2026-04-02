@@ -128,7 +128,7 @@ watch(() => route.path, () => {
       justify-content: center;
       padding: 10px 7px;
       transition: .2s;
-      border-radius: theme('borderRadius.md');
+      border-radius: var(--border-radius-md);
       cursor: pointer;
       font-size: 12px;
 
@@ -137,11 +137,11 @@ watch(() => route.path, () => {
       }
 
       &:hover:not(.active) {
-        background: theme('colors.fill.tertiary');
+        background:  var(--fill-color-tertiary);
       }
 
       &.active {
-        background: theme('colors.primary');
+        background: var(--primary-main);
         color: white;
       }
     }
@@ -153,19 +153,19 @@ watch(() => route.path, () => {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border-radius: theme('borderRadius.md');
+    border-radius: var(--border-radius-md);
 
     &:hover {
-      background: theme('colors.fill.tertiary');
+      background: var(--fill-color-tertiary);
     }
   }
 
   &.inverted {
-    border-right: 1px solid theme('borderColor.inverted');
+    border-right: 1px solid var(--border-color-inverted);
 
     .mixSidebar-container-menu {
       &:hover:not(.active) {
-        background: theme('colors.fill.inverted');
+        background: var(--fill-color-inverted);
       }
     }
   }

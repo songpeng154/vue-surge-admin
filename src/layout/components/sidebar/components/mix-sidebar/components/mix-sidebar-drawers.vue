@@ -56,18 +56,18 @@ const dynamicStyles = computed(() => {
   top: 0;
   z-index: 100;
   overflow: hidden;
-  background: theme('backgroundColor.container');
-  border-right: 1px solid theme('borderColor.tertiary');
+  background: var(--background-color-container);
+  border-right: 1px solid var(--border-color-tertiary);
   display: flex;
   flex-direction: column;
   transition: left .2s ease-in-out;
 
   &.inverted {
-    background: theme('backgroundColor.inverted');
-    border-right: 1px solid theme('borderColor.inverted');
+    background: var(--background-color-inverted);
+    border-right: 1px solid  var(--border-color-inverted);
 
     .mixMenuDrawers-header {
-      border-bottom: 1px solid theme('borderColor.inverted');
+      border-bottom: 1px solid var(--border-color-inverted);
     }
   }
 
@@ -79,7 +79,7 @@ const dynamicStyles = computed(() => {
     padding: 15px;
     font-size: 24px;
     font-weight: bold;
-    border-bottom: 1px solid theme('borderColor.secondary');
+    border-bottom: 1px solid  var(--border-color-secondary);
     position: relative;
     white-space: nowrap;
 

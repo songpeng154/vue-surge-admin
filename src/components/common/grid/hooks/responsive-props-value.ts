@@ -13,7 +13,7 @@ import AppConstant from '@/constant/app.ts'
 * */
 function responsivePropsValue<K extends Recordable>(width: Ref<number>, data: K, key: keyof K) {
   const getResponsiveValue = (record: ResponsiveValue) => {
-    const b = AppConstant.SCREEN_BREAKPOINTS
+    const b = AppConstant.THEME.breakpoints
     const { xs, sm, md, lg, xl } = record
     const w = width.value
     if (xs && w <= b.xs)

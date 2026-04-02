@@ -1,22 +1,18 @@
-import type { Record } from 'immutable'
 import type { GlobalThemeOverrides } from 'naive-ui'
 
 export default class AppConstant {
-  // 系统主题色
-  static PRIMARY_COLOR = '#6675ff'
-
   // 主题配置
   static THEME: AppTheme = {
     colors: {
       primary: '#6675ff',
 
-      success: '#52c41a',
+      success: '#52C41A',
 
-      warning: '#faad14',
+      warning: '#FAAE13',
 
-      error: '#333333',
+      error: '#FF4D4E',
 
-      info: '#667fff',
+      info: '#5a70df',
     },
     textSize: {
       sm: '12px',
@@ -89,10 +85,10 @@ export default class AppConstant {
           inverted: 'rgba(100,100,100,.9)',
         },
         borderColor: {
-          main: 'rgba(255,255,255,.24)',
-          secondary: 'rgba(255,255,255,.18)',
-          tertiary: 'rgba(255,255,255,.12)',
-          inverted: 'rgba(255,255,255,.1)',
+          main: 'rgba(255,255,255,.15)',
+          secondary: 'rgba(255,255,255,.1)',
+          tertiary: 'rgba(255,255,255,.08)',
+          inverted: 'rgba(255,255,255,.05)',
         },
       },
     },
@@ -108,22 +104,33 @@ export default class AppConstant {
         textColorPressedPrimary: 'rgba(255, 255, 255, .9)',
         textColorFocusPrimary: 'rgba(255, 255, 255, .9)',
         textColorDisabledPrimary: 'rgba(255, 255, 255, .9)',
+        textColorSuccess: 'rgba(255, 255, 255, .9)',
+        textColorHoverSuccess: 'rgba(255, 255, 255, .9)',
+        textColorPressedSuccess: 'rgba(255, 255, 255, .9)',
+        textColorFocusSuccess: 'rgba(255, 255, 255, .9)',
+        textColorDisabledSuccess: 'rgba(255, 255, 255, .9)',
+        textColorWarning: 'rgba(255, 255, 255, .9)',
+        textColorHoverWarning: 'rgba(255, 255, 255, .9)',
+        textColorPressedWarning: 'rgba(255, 255, 255, .9)',
+        textColorFocusWarning: 'rgba(255, 255, 255, .9)',
+        textColorDisabledWarning: 'rgba(255, 255, 255, .9)',
+        textColorError: 'rgba(255, 255, 255, .9)',
+        textColorHoverError: 'rgba(255, 255, 255, .9)',
+        textColorPressedError: 'rgba(255, 255, 255, .9)',
+        textColorFocusError: 'rgba(255, 255, 255, .9)',
+        textColorDisabledError: 'rgba(255, 255, 255, .9)',
+        textColorInfo: 'rgba(255, 255, 255, .9)',
+        textColorHoverInfo: 'rgba(255, 255, 255, .9)',
+        textColorPressedInfo: 'rgba(255, 255, 255, .9)',
+        textColorFocusInfo: 'rgba(255, 255, 255, .9)',
+        textColorDisabledInfo: 'rgba(255, 255, 255, .9)',
       },
     },
   }
 
-  // 屏幕断点
-  static SCREEN_BREAKPOINTS: Breakpoints = {
-    xs: 530,
-    sm: 768,
-    md: 992,
-    lg: 1200,
-    xl: 1920,
-  }
-
   // 系统主题色预设
   static THEME_COLORS = [
-    this.PRIMARY_COLOR,
+    this.THEME.colors.primary,
     '#31b3b3',
     '#3498DB',
     '#dd4939',

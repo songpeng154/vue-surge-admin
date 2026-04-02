@@ -25,7 +25,7 @@ interface Props {
   width: 100%;
 
   &-title {
-    color: theme('textColor.base');
+    color: var(--text-color-main);
   }
 
   &-content {

@@ -14,13 +14,13 @@ globalSubscribe()
 
 <template>
   <n-config-provider
-    class="w-h-full"
+    class="size-full"
     inline-theme-disabled
     :theme="appStore.naiveTheme"
     :theme-overrides="appStore.themeOverrides"
     :locale="zhCN"
     :date-locale="dateZhCN"
-    :breakpoints="AppConstant.SCREEN_BREAKPOINTS"
+    :breakpoints="AppConstant.THEME.breakpoints"
   >
     <app-provider>
       <router-view />

@@ -197,8 +197,8 @@ defineExpose<GroupSchemaFormExpose>({
   align-items: center;
   margin-bottom: 20px;
   padding: 5px 10px;
-  background: theme('colors.primaryShallow');
-  border-radius: theme('borderRadius.md');
+  background: var(--primary-shallow);
+  border-radius: var(--border-radius-md);
 
   &-title {
     display: inline-flex;
@@ -210,8 +210,8 @@ defineExpose<GroupSchemaFormExpose>({
       display: inline-block;
       height: 25px;
       width: 4px;
-      background: theme('colors.primary');
-      border-radius: theme('borderRadius.md');
+      background: var(--primary-main);
+      border-radius: var(--border-radius-md);
       flex-shrink: 0;
     }
 
