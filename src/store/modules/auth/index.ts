@@ -54,11 +54,11 @@ const useAuthStore = defineStore('Auth', () => {
 
   // 获取用户信息
   const getUserinfo = async () => {
-    const [result, error] = await UserApi.getUserinfo()
-    if (error) {
+    const result = await UserApi.getUserinfo().catch(() => {
       initAuthStore()
       return Promise.reject(new Error('用户信息获取失败'))
-    }
+    })
+
     auth.roles = result.roles
     auth.permissions = result.permissions
     auth.userinfo = result.userinfo
@@ -79,20 +79,17 @@ const useAuthStore = defineStore('Auth', () => {
 
   // 密码登录
   const passwordLogin = async (form: UserModel.PasswordLoginParams) => {
-    const [result, error] = await UserApi.passwordLogin(form)
-    if (error)
-      return
+    const result = await UserApi.passwordLogin(form)
     setToken(result.token)
     await handleLoginAfter()
   }
 
   // 获取用户路由
   const getUserRoutes = async () => {
-    const [result, error] = await UserApi.getRoutes()
-    if (error) {
+    const result = await UserApi.getRoutes().catch(() => {
       initAuthStore()
       return Promise.reject(new Error('用户路由获取失败'))
-    }
+    })
     auth.routes = result
   }
 
