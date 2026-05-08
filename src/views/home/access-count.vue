@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { ECOption } from '@/hooks/common/echarts/core.ts'
-import { useRequest } from 'norm-axios'
+import { useApi } from '@/hooks/common/api.ts'
 import useEcharts from '@/hooks/common/echarts'
 import SystemApi from '@/service/api/system.ts'
 
 const { echartsDom, render } = useEcharts()
 
-const { run } = useRequest(SystemApi.getAccessCount, {
+const { run } = useApi(SystemApi.getAccessCount, {
   manual: true,
 })
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ECOption } from '@/hooks/common/echarts/core.ts'
-import { useRequest } from 'norm-axios'
+import { useApi } from '@/hooks/common/api'
 import useEcharts from '@/hooks/common/echarts'
 import echarts from '@/hooks/common/echarts/core.ts'
 import SystemApi from '@/service/api/system.ts'
@@ -8,11 +8,11 @@ import SystemApi from '@/service/api/system.ts'
 const { echartsDom: dom1, render: renderUsageCount } = useEcharts()
 const { echartsDom: dom2, render: renderTechnologyStack } = useEcharts()
 
-const { run: getUsageCount } = useRequest(SystemApi.getUsageCount, {
+const { run: getUsageCount } = useApi(SystemApi.getUsageCount, {
   manual: true,
 })
 
-const { run: getTechnologyStack } = useRequest(SystemApi.getTechnologyStack, {
+const { run: getTechnologyStack } = useApi(SystemApi.getTechnologyStack, {
   manual: true,
 })
 

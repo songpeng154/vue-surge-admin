@@ -49,9 +49,9 @@ export default {
       ],
     },
     {
-      path: 'https://norm-axios-press.pages.dev/',
+      path: 'https://songpeng154.github.io/vue-rex/',
       meta: {
-        title: '约定式请求',
+        title: 'Vue Rex让请求更简单',
       },
     },
   ],

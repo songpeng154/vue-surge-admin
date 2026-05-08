@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useRequest } from 'norm-axios'
+import { useApi } from '@/hooks/common/api.ts'
 import SystemApi from '@/service/api/system.ts'
 
-const { data } = useRequest(SystemApi.getStatistics)
+const { data } = useApi(SystemApi.getStatistics)
 
 const countList = computed(() => {
   return [
