@@ -71,7 +71,9 @@ const useTabBarStore = defineStore('TabBar', () => {
       return
     const index = getIndex(tab.path)
     tabBar.tabs.splice(index, 1)
-    isActive(tab.path) && router.push(tabBar.tabs.at(-1).path)
+    if (isActive(tab.path)) {
+      router.push(tabBar.tabs.at(-1)!.path)
+    }
   }
 
   // 刷新当前激活的路由
