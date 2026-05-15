@@ -7,6 +7,9 @@ declare interface ImportMetaEnv {
   // 网站标题
   readonly VITE_APP_TITLE: string
 
+  // OpenAPI 文档地址
+  readonly VITE_OPENAPI_URL: string
+
   // 资源公共路径
   readonly VITE_PUBLIC_PATH: string
 

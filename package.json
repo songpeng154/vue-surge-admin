@@ -15,6 +15,7 @@
     "build:test": "vue-tsc --noEmit && vite build --mode test",
     "preview": "vite preview --open",
     "type-check": "vue-tsc --noEmit",
+    "gen:openapi-type": "node ./scripts/generate-openapi-types.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint-staged": "lint-staged"
@@ -54,6 +55,7 @@
     "eslint": "^10.3.0",
     "lint-staged": "^16.4.0",
     "naive-ui": "^2.44.1",
+    "openapi-typescript": "^7.13.0",
     "sass": "^1.99.0",
     "simple-git-hooks": "^2.13.1",
     "terser": "^5.47.1",
@@ -67,11 +69,6 @@
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vue-tsc": "^3.2.8"
-  },
-  "pnpm": {
-    "ignoredBuiltDependencies": [
-      "esbuild"
-    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
