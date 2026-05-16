@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
-import RouterConstant from '@/constant/router'
+import useAuthStore from '@/store/modules/auth'
 
 defineOptions({ name: 'NotFound' })
 const router = useRouter()
 function goHome() {
-  router.push(RouterConstant.HOME_PATH)
+  const authStore = useAuthStore()
+  router.push(authStore.homePath)
 }
 </script>
 

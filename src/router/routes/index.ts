@@ -5,7 +5,6 @@ export const ROUTE_ROOT: AppRouteRecordRaw = {
   path: '/',
   name: 'root',
   component: 'basic',
-  redirect: RouterConstant.HOME_PATH,
 }
 
 // 鉴权

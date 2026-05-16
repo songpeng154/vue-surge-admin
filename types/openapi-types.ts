@@ -616,6 +616,8 @@ export interface PermissionSelfView {
   hideMenu?: boolean
   /** @description 禁用菜单，不能通过路由访问 */
   disabledMenu?: boolean
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
   /**
    * Format: int32
    * @description 排序
@@ -1139,9 +1141,9 @@ export interface TargetOf_users {
 
 export interface UpdatePasswordDto {
   /** @description 旧密码 */
-  oldPassword?: string
+  oldPassword: string
   /** @description 新密码 */
-  newPassword?: string
+  newPassword: string
 }
 
 export interface UserAssignRolesDto {
@@ -1151,11 +1153,13 @@ export interface UserAssignRolesDto {
 
 export interface UserProfileView {
   /** @description 用户信息 */
-  user?: UserView
+  user: UserView
   /** @description 细粒度权限 */
-  permissions?: string[]
+  permissions: string[]
   /** @description 菜单列表 */
-  menus?: PermissionSelfView[]
+  menus: PermissionSelfView[]
+  /** @description 角色列表 */
+  roles: RoleSelfView[]
 }
 
 export interface UserSaveDto {
@@ -1357,6 +1361,12 @@ export type ApiPath
     | '/auth/login/email/code/send'
   /** 登出 */
     | '/auth/logout'
+  /** 修改个人信息 */
+    | '/profile'
+  /** 获取当前用户信息 */
+    | '/profile/me'
+  /** 修改密码 */
+    | '/profile/password'
   /** 获取字典项列表、创建字典项 */
     | '/system/dict-item/'
   /** 更新字典项、删除字典项 */
@@ -1407,11 +1417,3 @@ export type ApiPath
     | '/system/user/{id}/status'
   /** 获取用户分页列表 */
     | '/system/user/page'
-  /** 修改个人信息 */
-    | '/user-profile'
-  /** 获取当前用户详情（用户信息 + 角色 + 权限 + 菜单） */
-    | '/user-profile/detail'
-  /** 获取当前用户信息 */
-    | '/user-profile/me'
-  /** 修改密码 */
-    | '/user-profile/password'

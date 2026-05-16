@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { AccountLoginDto } from '#/openapi-types.ts'
 import type { SchemaFormExpose } from '@/components/common/schema-form/types/base.ts'
 import type { DefineSchema } from '@/components/common/schema-form/types/common.ts'
 import { reactive } from 'vue'
 import renderIcon from '@/hooks/components/render-icon.ts'
+import { rememberMeCache } from '@/store/caches.ts'
 import useAuthStore from '@/store/modules/auth'
 import OtherLogins from '@/views/auth/components/OtherLogins.vue'
 
@@ -29,14 +31,15 @@ const otherOperations = reactive([
   },
 ])
 
-const form = reactive<UserModel.PasswordLoginParams>({
-  username: 'admin',
-  password: '123456',
+const form = reactive<AccountLoginDto>({
+  account: 'admin',
+  password: '$2a$10$N9qo8uLOickgx2ZMRZoMye',
+  rememberMe: rememberMeCache.get() || false,
 })
 
-const schema = ref<DefineSchema<UserModel.PasswordLoginParams>[]>([
+const schema = ref<DefineSchema<AccountLoginDto>[]>([
   {
-    field: 'username',
+    field: 'account',
     component: 'input',
     componentProps: {
       size: 'large',
@@ -77,7 +80,12 @@ const schema = ref<DefineSchema<UserModel.PasswordLoginParams>[]>([
 async function handleLogin() {
   await formRef.value?.validate()
   setLoading(true)
-  await authStore.passwordLogin(form).finally(() => setLoading(false))
+  await authStore.loginByAccount(form).finally(() => setLoading(false))
+}
+
+function handleRememberMe() {
+  console.log(form.rememberMe)
+  rememberMeCache.set(form.rememberMe ?? false)
 }
 </script>
 
@@ -99,7 +107,9 @@ async function handleLogin() {
           align="center"
           justify="space-between"
         >
-          <n-checkbox>记住密码</n-checkbox>
+          <n-checkbox v-model:checked="form.rememberMe" @update:checked="handleRememberMe">
+            记住密码
+          </n-checkbox>
           <span class="text-primary cursor-pointer">忘记密码？</span>
         </n-flex>
       </template>

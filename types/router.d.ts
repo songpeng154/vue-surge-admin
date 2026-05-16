@@ -22,7 +22,7 @@ declare module 'vue-router' {
     // 是否固定在tab上
     affixTab?: boolean
 
-    // 图标
+    // 图标,使用方式: icon: 'ant-design:copyright-circle-filled'
     icon?: string
 
     // 内部嵌套地址
@@ -39,5 +39,8 @@ declare module 'vue-router' {
 
     // 禁用菜单 (不能通过路由访问)
     disabledMenu?: boolean
+
+    // 是否为根页面（首页入口）
+    rootPage?: boolean
   }
 }

@@ -14,8 +14,10 @@ const service = axios.create({
 
 // 请求拦截器
 service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (config.headers)
-    config.headers.token = 1
+  if (config.headers) {
+    const authStore = useAuthStore()
+    config.headers.token = authStore.token
+  }
   return config
 })
 

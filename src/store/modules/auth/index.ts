@@ -1,3 +1,4 @@
+import type { AccountLoginDto, PermissionSelfView } from '#/openapi-types.ts'
 import type { AuthStore } from '@/store/modules/auth/type'
 import { cloneDeep } from 'es-toolkit'
 import { defineStore } from 'pinia'
@@ -5,27 +6,23 @@ import RouterConstant from '@/constant/router'
 import ServiceConstant from '@/constant/service'
 import router from '@/router'
 import { RouterUtils } from '@/router/utils.ts'
-import UserApi from '@/service/api/user'
+import authApi from '@/service/api/auth.ts'
+import profileApi from '@/service/api/profile.ts'
 import { tokenCache } from '@/store/caches'
 
 const initAuth: AuthStore = {
   token: tokenCache.get(),
-  // 角色
   roles: [],
-  // 细粒度权限
   permissions: [],
-  // 用户信息
   userinfo: null,
-  // 路由鉴权模式
-  routeAuthMode: 'web',
-  // 是否已生成路由
   isGeneratedRoutes: false,
-  // 用户的路由
   routes: [],
+  homePath: '/',
 }
 
 const useAuthStore = defineStore('Auth', () => {
   const auth = reactive<AuthStore>(cloneDeep(initAuth))
+  let rawMenus: PermissionSelfView[] = []
 
   const authRefs = toRefs(auth)
 
@@ -53,73 +50,58 @@ const useAuthStore = defineStore('Auth', () => {
   }
 
   // 获取用户信息
-  const getUserinfo = async () => {
-    const result = await UserApi.getUserinfo().catch(() => {
+  const getProfileMe = async () => {
+    const result = await profileApi.getProfileMe().catch(() => {
       initAuthStore()
-      return Promise.reject(new Error('用户信息获取失败'))
+      throw new Error('用户信息获取失败')
     })
 
     auth.roles = result.roles
     auth.permissions = result.permissions
-    auth.userinfo = result.userinfo
+    rawMenus = result.menus
+    auth.userinfo = result.user
   }
 
   // 处理登录后
   const handleLoginAfter = async () => {
     // 获取用户信息
-    await getUserinfo()
-    const path = router.currentRoute.value.query.redirect as string || RouterConstant.HOME_PATH
+    await getProfileMe()
+    const path = router.currentRoute.value.query.redirect as string || '/'
     // 重定向路径
     await router.replace(path)
     window.$notification.info({
       title: '登录成功',
-      content: `欢迎回来，${auth.userinfo?.username}！`,
+      content: `欢迎回来，${auth.userinfo?.nickname}！`,
     })
   }
 
-  // 密码登录
-  const passwordLogin = async (form: UserModel.PasswordLoginParams) => {
-    const result = await UserApi.passwordLogin(form)
-    setToken(result.token)
+  // 账号密码登录
+  const loginByAccount = async (form: AccountLoginDto) => {
+    const token = await authApi.loginByAccount(form)
+    setToken(token)
     await handleLoginAfter()
-  }
-
-  // 获取用户路由
-  const getUserRoutes = async () => {
-    const result = await UserApi.getRoutes().catch(() => {
-      initAuthStore()
-      return Promise.reject(new Error('用户路由获取失败'))
-    })
-    auth.routes = result
   }
 
   // 退出登录
   const signOut = async () => {
-    const data = await UserApi.signOut()
+    await authApi.signOut()
     removeToken()
     await router.push(RouterConstant.LOGIN_PATH)
     initAuthStore()
-    return data
   }
 
-  // 初始化前端路由权限
-  const initFrontRouteAuth = () => {
-    // 获取用户路由
-    auth.routes = RouterUtils.getUserRouteList(auth.roles)
-    // 自定义路由转Vue路由
+  // 初始化路由权限
+  const initRouteAuth = () => {
+    auth.routes = RouterUtils.permissionsToRoutes(rawMenus)
     const vueRoutes = RouterUtils.transformCustomRoutesToVueRoutes(auth.routes)
-    // 添加路由
     vueRoutes.forEach(route => router.addRoute(route))
-    auth.isGeneratedRoutes = true
-  }
-
-  // 初始化服务端路由权限
-  const initServerRouteAuth = async () => {
-    await getUserRoutes()
-    // 自定义路由转Vue路由
-    const vueRoutes = RouterUtils.transformCustomRoutesToVueRoutes(auth.routes)
-    // 添加路由
-    vueRoutes.forEach(route => router.addRoute(route))
+    // 计算首页路径
+    const allRoutes = auth.routes.flatMap(r => [r, ...(r.children ?? [])])
+    const rootPages = allRoutes.filter(r => r.meta?.rootPage)
+    if (rootPages.length > 1)
+      console.warn(`[Router] 存在多个 rootPage 标记的路由: ${rootPages.map(r => r.path).join(', ')}，将使用: ${rootPages[0].path}`)
+    const rootRoute = rootPages[0] ?? auth.routes[0]
+    auth.homePath = rootRoute?.path || '/'
     auth.isGeneratedRoutes = true
   }
 
@@ -128,13 +110,11 @@ const useAuthStore = defineStore('Auth', () => {
     isLogin,
     isAuth,
     initAuthStore,
-    passwordLogin,
-    getUserinfo,
-    getUserRoutes,
+    getProfileMe,
+    loginByAccount,
     signOut,
     handleLoginAfter,
-    initFrontRouteAuth,
-    initServerRouteAuth,
+    initRouteAuth,
   }
 })
 export default useAuthStore

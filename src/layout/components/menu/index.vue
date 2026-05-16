@@ -43,7 +43,7 @@ function routesToMenus(routes: AppRouteRecordRaw[]): MenuMixedOption[] {
       key: item.path,
       icon: item.meta?.icon ? () => RenderDynamicIcon(item.meta?.icon as string) : undefined,
       label: labelContainer(item),
-      show: item.meta?.hideMenu,
+      show: !item.meta?.hideMenu,
       disabled: item.meta?.disabledMenu,
       children: item.children?.length ? routesToMenus(item.children) : undefined,
     })

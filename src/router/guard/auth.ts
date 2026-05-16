@@ -17,12 +17,9 @@ export default async function createAuthGuard(
   if (to.meta?.ignoreAuth)
     return true
 
-  // 提取公共的路由鉴权处理逻辑
-  const handleRouteAuthMode = async () => {
-    if (authStore.routeAuthMode === 'web')
-      authStore.initFrontRouteAuth()
-    if (authStore.routeAuthMode === 'service')
-      await authStore.initServerRouteAuth()
+  // 初始化路由
+  const initRoutes = () => {
+    authStore.initRouteAuth()
     tabBarStore.initializeTabBar(authStore.$state.routes)
   }
 
@@ -41,26 +38,22 @@ export default async function createAuthGuard(
 
   // 没有鉴权（没有用户信息和角色）
   if (!authStore.isAuth) {
-    try {
-      await authStore.getUserinfo()
-      await handleRouteAuthMode()
-      return { ...to, replace: true }
-    }
-    catch (error) {
+    await authStore.getProfileMe().catch(() => false)
+    if (!authStore.isAuth)
       return { path: RouterConstant.LOGIN_PATH }
-    }
+    initRoutes()
+    return { ...to, replace: true }
   }
 
   // 没有生成路由
   if (!authStore.isGeneratedRoutes) {
-    await handleRouteAuthMode()
+    initRoutes()
     return { ...to, replace: true }
   }
 
   // 登录情况下不能到登录页面
   if (to.path.startsWith(RouterConstant.AUTH_ROUTE))
-    // [优化]: 防止 from.fullPath 就是 auth 页面而造成死循环，增加兜底逻辑
-    return from.path === to.path ? { path: '/' } : { path: from.fullPath }
+    return from.path === to.path ? { path: authStore.homePath } : { path: from.fullPath }
 
   // 打开外链
   if (RegUtils.MATCH_URL.test(to.path)) {
@@ -78,8 +71,12 @@ export default async function createAuthGuard(
   if (from.path.startsWith(RouterConstant.AUTH_ROUTE) && from.query.redirect) {
     return router.hasRoute(to.name as string)
       ? true
-      : { path: RouterConstant.HOME_PATH, replace: true }
+      : { path: authStore.homePath, replace: true }
   }
+
+  // 根路由重定向到首页
+  if (to.path === '/')
+    return { path: authStore.homePath, replace: true }
 
   // 全部校验通过，正常放行
   return true

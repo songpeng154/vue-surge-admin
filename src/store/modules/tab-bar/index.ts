@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import RouterConstant from '@/constant/router'
 import router from '@/router'
 import useAppStore from '@/store/modules/app'
+import useAuthStore from '@/store/modules/auth'
 import { asyncWait } from '@/utils'
 
 const useTabBarStore = defineStore('TabBar', () => {
@@ -122,8 +123,8 @@ const useTabBarStore = defineStore('TabBar', () => {
   // 关闭全部
   const closeAll = () => {
     tabBar.tabs = [...getCurrentTabsAffixTab()]
-    // 重定向到首页
-    void router.push(RouterConstant.HOME_PATH)
+    const authStore = useAuthStore()
+    void router.push(authStore.homePath)
   }
 
   // 获取路由中的固定标签
