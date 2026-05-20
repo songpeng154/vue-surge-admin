@@ -39,8 +39,8 @@ export function createVitePlugins(viteEnv: ImportMetaEnv): PluginOption[] {
     Components({
       // 为全局组件生成 TypeScript 声明,并指定生成目录
       dts: 'types/components.d.ts',
-      extensions: ['vue'],
-      include: [/\.vue$/, /\.vue\?vue/],
+      extensions: ['vue', 'tsx'], // 加上 tsx
+      include: [/\.vue$/, /\.vue\?vue/, /\.tsx$/],
       resolvers: [
         NaiveUiResolver(),
       ],

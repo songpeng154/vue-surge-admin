@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import type { SchemaFormExpose, SchemaFormProps, SchemaFormSlots } from '@/components/common/schema-form/types/base.ts'
+import type {
+  SchemaFormExpose,
+  SchemaFormProps,
+  SchemaFormSlots,
+} from '@/components/common/schema-form/types/base.ts'
 import type { UnwrapSchema } from '@/components/common/schema-form/types/common.ts'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
 import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<SchemaFormProps>(), {
@@ -40,8 +44,8 @@ useProvideSchemaFormContext(props, model)
 const formProps = useOmitProps(props, ['schema'])
 const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
 // 通用方法
-const { formRef, commonExpose } = useExpose()
-const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
+const { formRef, commonExpose } = useCommonExpose()
+const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
 
 defineExpose<SchemaFormExpose>(commonExpose)
 </script>

@@ -375,6 +375,8 @@ export interface OrganizationTreeView {
    * @enum {string}
    */
   type: OrganizationType
+  /** @description 子组织列表 */
+  children?: unknown
 }
 
 export interface OrganizationUserTreeView {
@@ -417,6 +419,8 @@ export interface OrganizationUserTreeView {
   type: OrganizationType
   /** @description 组织下的用户列表 */
   users: TargetOf_users[]
+  /** @description 子组织列表 */
+  children?: unknown
 }
 
 export interface OrganizationView {
@@ -616,13 +620,13 @@ export interface PermissionSelfView {
   hideMenu?: boolean
   /** @description 禁用菜单，不能通过路由访问 */
   disabledMenu?: boolean
-  /** @description 是否为根页面（首页入口） */
-  rootPage?: boolean
   /**
    * Format: int32
    * @description 排序
    */
   sortNum?: number
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
   /**
    * Format: int64
    * @description 父菜单 ID
@@ -636,6 +640,10 @@ export interface PermissionTreeView {
    * @description 权限 ID
    */
   id: number
+
+  value: number
+
+  label: string
   /**
    * Format: int64
    * @description 创建者
@@ -690,6 +698,10 @@ export interface PermissionTreeView {
    * @description 排序
    */
   sortNum?: number
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
+  /** @description 子权限列表 */
+  children?: unknown
 }
 
 export interface PermissionView {
@@ -752,6 +764,8 @@ export interface PermissionView {
    * @description 排序
    */
   sortNum?: number
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
   /**
    * Format: int64
    * @description 父菜单 ID
@@ -988,6 +1002,8 @@ export interface TargetOf_parent {
    * @description 排序
    */
   sortNum?: number
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
 }
 
 export interface TargetOf_permissions {
@@ -1050,6 +1066,8 @@ export interface TargetOf_permissions {
    * @description 排序
    */
   sortNum?: number
+  /** @description 是否为根页面（首页入口） */
+  rootPage?: boolean
 }
 
 export interface TargetOf_roles {

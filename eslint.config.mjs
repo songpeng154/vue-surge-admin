@@ -4,6 +4,7 @@ export default config(
   {
     unocss: true,
     typescript: true,
+    markdown: false,
     vue: true,
   },
 )

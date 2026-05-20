@@ -21,7 +21,7 @@ import {
   NTreeSelect,
   NUpload,
 } from 'naive-ui'
-
+import IconSelector from '@/components/common/icon/icon-selector.vue'
 // schema form 可渲染的组件
 export const SCHEMA_RENDER_COMPONENTS = {
   input: NInput,
@@ -45,4 +45,5 @@ export const SCHEMA_RENDER_COMPONENTS = {
   transfer: NTransfer,
   treeSelect: NTreeSelect,
   upload: NUpload,
+  iconSelect: IconSelector,
 }

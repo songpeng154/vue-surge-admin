@@ -6,11 +6,11 @@ const { VITE_APP_TITLE } = getMetaEnv()
 </script>
 
 <template>
-  <div class="relative size-full flex-center bg-primary-shallow">
+  <div class="bg-primary-shallow flex-center size-full relative">
     <DynamicBackground />
     <div
       v-motion-slide-left
-      class="absolute left-[10px] top-[10px] flex items-center gap-[5px]"
+      class="flex gap-[5px] items-center left-[10px] top-[10px] absolute"
     >
       <img width="50" src="/logo.svg" alt="">
       <h3 class="text-6">
@@ -19,7 +19,7 @@ const { VITE_APP_TITLE } = getMetaEnv()
     </div>
     <div
       v-motion-slide-right
-      class="absolute right-[10px] top-[10px] flex gap-[5px] rounded-sm p-[5px] bg-layer"
+      class="p-[5px] rounded-sm flex gap-[5px] right-[10px] top-[10px] absolute bg-layer"
     >
       <theme-palette />
       <theme-switch />
@@ -30,8 +30,8 @@ const { VITE_APP_TITLE } = getMetaEnv()
       class="auth-card w-[500px] max-xs:w-[90%]"
       content-class="h-full"
     >
-      <div class="size-full flex overflow-hidden">
-        <div class="size-full flex-1 flex-shrink-0 p-[10px]">
+      <div class="flex size-full overflow-hidden">
+        <div class="p-[10px] flex-1 flex-shrink-0 size-full">
           <router-view v-slot="{ Component, route }">
             <component
               :is="Component"

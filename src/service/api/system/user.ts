@@ -8,19 +8,19 @@ const sysUserApi = {
   /**
    * 获取系统用户列表
    */
-  getSysUserPage: (params: PageParams<UserSpec>, sorts?: string) =>
+  getPage: (params: PageParams<UserSpec>, sorts?: string) =>
     service.get<PageResultUserSelfView[]>('/system/user/page', { params: { ...params, sorts } }),
 
   /**
    * 获取系统全部用户
    */
-  getSysUserList: (params: PageParams<UserSpec>) =>
+  getList: (params: PageParams<UserSpec>) =>
     service.get<UserSelfView[]>('/system/user', { params }),
 
   /**
    * 获取系统用户详情
    */
-  getSysUser: (id: number) =>
+  getDetail: (id: number) =>
     service.get<UserView>(`/system/user/${id}`),
 
   /**
@@ -32,31 +32,31 @@ const sysUserApi = {
   /**
    * 创建系统用户
    */
-  createSysUser: (data: UserSaveDto) =>
+  create: (data: UserSaveDto) =>
     service.post('/system/user', data),
 
   /**
    * 更新系统用户
    */
-  updateSysUser: (id: number, data: UserSaveDto) =>
+  update: (id: number, data: UserSaveDto) =>
     service.put(`/system/user/${id}`, data),
 
   /**
    * 更新系统用户状态
    */
-  updateSysUserStatus: (id: number, status: UserStatus) =>
+  updateStatus: (id: number, status: UserStatus) =>
     service.put(`/system/user/${id}/status`, { status }),
 
   /**
    * 分配角色
    */
-  updateSysUserRoles: (id: number, roleIds: number[]) =>
+  assignRoles: (id: number, roleIds: number[]) =>
     service.put(`/system/user/${id}/roles`, { roleIds }),
 
   /**
    * 删除系统用户
    */
-  deleteSysUser: (id: number) =>
+  delete: (id: number) =>
     service.delete(`/system/user/${id}`),
 
 }

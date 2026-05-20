@@ -57,7 +57,7 @@ function setExpose() {
   commonExpose.restoreValidation = formRef.value.restoreValidation
 
   commonExpose.resetFields = () => {
-    model.value = cloneDeep(initModel)
+    Object.assign(model.value, cloneDeep(initModel))
     commonExpose.restoreValidation()
   }
 

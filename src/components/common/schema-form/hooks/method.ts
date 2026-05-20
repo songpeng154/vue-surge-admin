@@ -1,7 +1,7 @@
 import type { ModelRef } from 'vue'
 import type { SchemaFormCommonExpose, SchemaFormCommonProps } from '@/components/common/schema-form/types/common.ts'
 
-function useMethod(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose, model: ModelRef<Recordable>) {
+function useCommonMethod(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose, model: ModelRef<Recordable>) {
   const handleSubmit = () => {
     if (props.onSubmit) {
       props.onSubmit(expose.validate, model.value)
@@ -15,9 +15,15 @@ function useMethod(props: SchemaFormCommonProps, expose: SchemaFormCommonExpose,
   }
 
   const handleReset = () => {
-    props.onReset ? props.onReset(expose.resetFields, model.value) : expose.resetFields()
+    if (props.onReset) {
+      props.onReset(expose.resetFields, model.value)
+    }
+    else {
+      expose.resetFields()
+    }
+    props.onResetAfter?.(model.value)
   }
   return { handleSubmit, handleReset }
 }
 
-export default useMethod
+export default useCommonMethod

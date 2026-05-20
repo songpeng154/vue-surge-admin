@@ -6,8 +6,8 @@ import type {
   PopupSchemaFormSlots,
 } from '@/components/common/schema-form/types/popup.ts'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
 import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<PopupSchemaFormProps>(), {
@@ -79,8 +79,8 @@ const formProps = useOmitProps(props, [
 ])
 const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'popupHeader', 'popupFormBefore', 'popupFormAfter', 'popupFooter'])
 // 通用方法
-const { formRef, commonExpose } = useExpose()
-const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
+const { formRef, commonExpose } = useCommonExpose()
+const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
 const dialog = useDialog()
 // 关闭弹框并重置表单
 function closeAndReset() {

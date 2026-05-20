@@ -38,7 +38,7 @@ service.interceptors.response.use(
     // 处理需要退出登录的错误
     if (ServiceConstant.SIGN_OUT_CODE[code]) {
       const authStore = useAuthStore()
-      const errorMessage = ServiceConstant.SIGN_OUT_CODE[code]
+      const errorMessage = msg || ServiceConstant.SIGN_OUT_CODE[code]
 
       await authStore.signOut()
       !isCancelMessagePrompt && showMessage(errorMessage, 'warning')

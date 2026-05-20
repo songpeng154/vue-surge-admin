@@ -7,8 +7,8 @@ import type {
 } from '@/components/common/schema-form/types/search.ts'
 import { take } from 'es-toolkit'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
 import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<SearchSchemaFormProps>(), {
@@ -61,8 +61,8 @@ const formProps = useOmitProps(props, ['searchShowNumber', 'schema', 'collapsed'
 const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
 
 // 通用方法
-const { formRef, commonExpose } = useExpose()
-const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
+const { formRef, commonExpose } = useCommonExpose()
+const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
 
 // 搜索Schema
 const searchSchemas = computed(() => {
@@ -76,6 +76,9 @@ const text = computed(() => ({
   text: !collapsed.value ? props.unCollapsedText : props.collapsedText,
   icon: !collapsed.value ? 'i-ic:outline-keyboard-arrow-up' : 'i-ic:outline-keyboard-arrow-down',
 }))
+
+// 折叠按钮是否显示
+const collapsedVisible = computed(() => props.enableCollapsed && schema.value.length > props.searchShowNumber)
 
 function toggleCollapsed(isCollapsed?: boolean) {
   collapsed.value = isCollapsed || !collapsed.value
@@ -117,7 +120,7 @@ defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })
               {{ props.submitText }}
             </n-button>
             <n-button
-              v-if="props.enableCollapsed"
+              v-if="collapsedVisible"
               type="primary"
               text
               @click="toggleCollapsed()"

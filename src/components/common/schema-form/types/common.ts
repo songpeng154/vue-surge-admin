@@ -6,6 +6,7 @@ import type { MentionOption } from 'naive-ui/es/mention/src/interface'
 import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 import type { Option } from 'naive-ui/es/transfer/src/interface'
 import type { TreeSelectOption } from 'naive-ui/es/tree-select/src/interface'
+import type { Paths } from 'type-fest'
 import type { MaybeRef, UnwrapRef, VNode } from 'vue'
 import type { GridItemProps, GridProps } from '@/components/common/grid/types'
 import type { ComponentsName, ComponentsNameRef, ComponentsProps } from '@/components/common/schema-form/types/component'
@@ -116,7 +117,7 @@ export interface Schema<
   DComponentsName extends ComponentsNameRef = ComponentsNameRef,
 > extends FormItemPropsRefs, CommonComponentPropsMap<TForm, DComponentsName> {
   // 字段
-  field?: MaybeRef<keyof TForm | string>
+  field?: MaybeRef<Paths<TForm> | (string & {})>
 
   // label 标签的文本
   label?: MaybeRef<string> | SlotsContent | CallbackParamsFunction<TForm, UnwrapRef<DComponentsName>, SlotsContent>
@@ -128,7 +129,7 @@ export interface Schema<
   component?: DComponentsName
 
   // 组件属性
-  componentProps?: WrapWithMaybeRef<SafeComponentProps<ComponentsProps[UnwrapRef<DComponentsName>]>> | Recordable
+  componentProps?: WrapWithMaybeRef<SafeComponentProps<ComponentsProps[UnwrapRef<DComponentsName>]>>
 
   // 组件内容
   componentContent?: SlotsContent
@@ -208,7 +209,8 @@ export interface SchemaFormCommonProps extends Partial<Omit<FormSetupProps, 'onS
   // 自动placeholder (item的label的类型为string才会生效，优先级最低)
   autoPlaceholder?: boolean
 
-  // 自动规则校验 (当required为真的时候，会根据label自动生成校验提示信息,label的类型为string才会生效，优先级最低)
+  // TODO:优化，支持生成其他的类型
+  // 自动规则校验 (当showRequireMark为真的时候，会根据label自动生成校验提示信息,label的类型为string才会生效，优先级最低)
   autoRules?: boolean
 
   // 自动标签宽度 (优先级最低)
@@ -229,17 +231,72 @@ export interface SchemaFormCommonProps extends Partial<Omit<FormSetupProps, 'onS
   //  隐藏重置按钮
   hideReset?: boolean
 
-  // 提交事件 (传入该事件后会覆盖 onFinish | onFinishFailed 事件)
+  /**
+   * @description 提交事件 (传入该事件后会覆盖 onFinish | onFinishFailed 事件)
+   * @param validate 验证方法
+   * @param model 模型
+   */
   onSubmit?: (validate: SchemaFormCommonExpose['validate'], model: Recordable) => void
 
-  // 提交表单且数据验证成功后回调事件
+  /**
+   * @description 提交表单且数据验证成功后回调事件
+   * @param model 模型
+   */
   onFinish?: (model: Recordable) => void
 
   // 提交表单且数据验证失败后回调事件
+  /**
+   * @description 提交表单且数据验证失败后回调事件
+   * @param error 错误信息
+   */
   onFinishFailed?: (error: any) => void
 
   // 重置方法
+  /**
+   * @description 重置表单
+   * @param validate 验证方法
+   * @param model 模型
+   */
   onReset?: (validate: SchemaFormCommonExpose['resetFields'], model: Recordable) => void
+
+  /**
+   * @description 重置表单后执行
+   * @param model 模型
+   */
+  onResetAfter?: (model: Recordable) => void
+}
+
+export interface SchemaFormCommonEmits {
+  /**
+   * @description 提交表单
+   * @param validate 验证方法
+   * @param model 模型
+   */
+  submit: [validate: SchemaFormCommonExpose['validate'], model: Recordable]
+  /**
+   * @description 提交表单且数据验证成功
+   * @param model 模型
+   */
+  finish: [model: Recordable]
+
+  /**
+   * @description 提交表单且数据验证失败
+   * @param error 错误信息
+   */
+  finishFailed: [error: any]
+
+  /**
+   * @description 重置表单
+   * @param validate 验证方法
+   * @param model 模型
+   */
+  reset: [validate: SchemaFormCommonExpose['resetFields'], model: Recordable]
+
+  /**
+   * @description 重置表单后执行
+   * @param model 模型
+   */
+  resetAfter: [model: Recordable]
 }
 
 // 通用插槽

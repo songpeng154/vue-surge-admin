@@ -51,7 +51,7 @@ const useAuthStore = defineStore('Auth', () => {
 
   // 获取用户信息
   const getProfileMe = async () => {
-    const result = await profileApi.getProfileMe().catch(() => {
+    const result = await profileApi.getDetail().catch(() => {
       initAuthStore()
       throw new Error('用户信息获取失败')
     })

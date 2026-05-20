@@ -94,6 +94,11 @@ export const componentFunction: ComponentFunction = {
   rate: {},
   switch: {},
   slider: {},
+  iconSelect: {
+    isSelectComponent: true,
+    isMapOptions: true,
+    isMapPlaceholder: true,
+  },
 }
 
 // 规则预设

@@ -8,8 +8,8 @@ import type {
 } from '@/components/common/schema-form/types/group.ts'
 import { isBoolean, isFunction } from 'es-toolkit'
 import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useMethod from '@/components/common/schema-form/hooks/method.ts'
+import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
+import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
 import useOmitProps from '@/hooks/common/omit-props.ts'
 
 const props = withDefaults(defineProps<GroupSchemaFormProps>(), {
@@ -50,9 +50,9 @@ useProvideSchemaFormContext(props, model)
 const formProps = useOmitProps(props, ['schema'])
 const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'groupTitle', 'collapsedButton'])
 // 通用的导出方法
-const { formRef, commonExpose } = useExpose()
+const { formRef, commonExpose } = useCommonExpose()
 // 通用方法
-const { handleReset, handleSubmit } = useMethod(props, commonExpose, model)
+const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
 
 const groupSchema = ref<UnwrapGroupSchema[]>([])
 
@@ -111,7 +111,7 @@ defineExpose<GroupSchemaFormExpose>({
     :model="model"
   >
     <template v-for="(config, i) in groupSchema" :key="i">
-      <template v-if="handleGroupHide">
+      <template v-if="handleGroupHide(config)">
         <div class="schemaForm-groupHeader">
           <div class="schemaForm-groupHeader-title">
             <slot name="groupTitle" :config="config">
