@@ -10,7 +10,23 @@ import {
 export default defineConfig<Theme>({
   content: {
     pipeline: {
-      exclude: ['node_modules', 'dist'],
+      // 优化：明确指定需要扫描的文件，减少扫描范围
+      include: [
+        'src/**/*.{vue,js,ts,jsx,tsx}',
+        'index.html',
+      ],
+      // 优化：排除不需要扫描的目录
+      exclude: [
+        'node_modules',
+        'dist',
+        '.git',
+        '.github',
+        '.vscode',
+        'build',
+        'public',
+        '**/*.spec.ts',
+        '**/*.test.ts',
+      ],
     },
   },
   transformers: [
@@ -74,4 +90,6 @@ export default defineConfig<Theme>({
       return breakpoints
     }, {}),
   },
+  // 优化：生产环境禁用 devtools
+  envMode: 'build',
 })

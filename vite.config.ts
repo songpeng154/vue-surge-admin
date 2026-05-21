@@ -39,6 +39,24 @@ export default defineConfig(({ mode }) => {
           drop_debugger: true,
         },
       },
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // 将 echarts 分割成独立的 chunk
+            if (id.includes('node_modules/echarts')) {
+              return 'echarts'
+            }
+            // 将 vue 相关库分割成独立的 chunk
+            if (id.includes('node_modules/vue') || id.includes('node_modules/@vue')) {
+              return 'vue-vendor'
+            }
+            // 将其他大型第三方库分割成 vendor chunk
+            if (id.includes('node_modules')) {
+              return 'vendor'
+            }
+          },
+        },
+      },
     },
   }
 })
