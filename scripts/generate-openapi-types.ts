@@ -93,17 +93,65 @@ function validateOpenapiDocument(doc: unknown): asserts doc is OpenAPI3 {
   }
 }
 
-async function loadOpenapiDocument(input: string): Promise<unknown> {
+async function loadOpenapiDocument(input: string, env: Record<string, string>): Promise<unknown> {
+  // 检查是否是 HTTP URL（但格式可能错误）
+  if (input.startsWith('http:') || input.startsWith('https:')) {
+    if (!input.startsWith('http://') && !input.startsWith('https://')) {
+      throw new Error(`URL 格式错误：${input}\n\n正确格式应该是：\n- http://localhost:8080/v3/api-docs\n- https://example.com/v3/api-docs\n\n注意：http: 后面需要两个斜杠 //`)
+    }
+  }
+
   if (!isHttpUrl(input)) {
-    return JSON.parse(readFileSync(resolve(root, input), 'utf8'))
+    try {
+      return JSON.parse(readFileSync(resolve(root, input), 'utf8'))
+    }
+    catch (err) {
+      if (err instanceof Error && err.message.includes('ENOENT')) {
+        throw new Error(`找不到本地 OpenAPI 文档文件：${input}\n\n请检查：\n1. 文件路径是否正确\n2. 如果是 URL，请确保格式正确（http:// 或 https://）`)
+      }
+      throw new Error(`读取本地 OpenAPI 文档失败：${input}\n${err instanceof Error ? err.message : String(err)}`)
+    }
   }
 
-  const response = await fetch(input)
-  if (!response.ok) {
-    throw new Error(`请求 OpenAPI 文档失败：${response.status} ${response.statusText}`)
-  }
+  try {
+    // 从环境变量读取认证信息
+    const authToken = env.OPENAPI_AUTH_TOKEN
+    const authUser = env.OPENAPI_AUTH_USER
+    const authPass = env.OPENAPI_AUTH_PASS
 
-  return response.json()
+    const headers: Record<string, string> = {}
+
+    // 支持 Bearer Token 认证
+    if (authToken) {
+      headers.Authorization = `Bearer ${authToken}`
+    }
+    // 支持 Basic Auth 认证
+    else if (authUser && authPass) {
+      const credentials = Buffer.from(`${authUser}:${authPass}`).toString('base64')
+      headers.Authorization = `Basic ${credentials}`
+    }
+
+    const response = await fetch(input, { headers })
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`请求 OpenAPI 文档失败：${response.status} ${response.statusText}\nURL: ${input}\n\n认证失败，请检查：\n1. 后端是否需要认证访问 API 文档\n2. 如需认证，请在 .env 文件中配置：\n   - Bearer Token: OPENAPI_AUTH_TOKEN=your-token\n   - Basic Auth: OPENAPI_AUTH_USER=username 和 OPENAPI_AUTH_PASS=password`)
+      }
+      throw new Error(`请求 OpenAPI 文档失败：${response.status} ${response.statusText}\nURL: ${input}\n\n请检查：\n1. 后端服务是否正常运行\n2. URL 配置是否正确（检查 .env 文件中的 VITE_OPENAPI_URL）\n3. 网络连接是否正常`)
+    }
+
+    const contentType = response.headers.get('content-type')
+    if (contentType && !contentType.includes('application/json')) {
+      throw new Error(`OpenAPI 文档返回了非 JSON 格式：${contentType}\nURL: ${input}\n\n可能原因：\n1. URL 指向了错误的端点（应该指向 /v3/api-docs）\n2. 后端服务返回了错误页面`)
+    }
+
+    return await response.json()
+  }
+  catch (err) {
+    if (err instanceof Error && err.message.includes('fetch failed')) {
+      throw new Error(`无法连接到后端服务：${input}\n\n请检查：\n1. 后端服务是否正常运行\n2. URL 是否正确（检查 .env 文件中的 VITE_OPENAPI_URL）\n3. 端口号是否正确\n4. 是否有防火墙或代理阻止连接`)
+    }
+    throw err
+  }
 }
 
 function getPropertyName(name: ts.PropertyName | undefined): string | undefined {
@@ -340,7 +388,7 @@ async function generate(): Promise<void> {
     process.exit(0)
   }
 
-  const rawDocument = await loadOpenapiDocument(openapiUrl)
+  const rawDocument = await loadOpenapiDocument(openapiUrl, env)
   validateOpenapiDocument(rawDocument)
 
   const enums = collectEnumTypes(rawDocument)

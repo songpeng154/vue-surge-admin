@@ -376,7 +376,7 @@ export interface OrganizationTreeView {
    */
   type: OrganizationType
   /** @description 子组织列表 */
-  children?: unknown
+  children?: OrganizationTreeView[]
 }
 
 export interface OrganizationUserTreeView {
@@ -420,7 +420,7 @@ export interface OrganizationUserTreeView {
   /** @description 组织下的用户列表 */
   users: TargetOf_users[]
   /** @description 子组织列表 */
-  children?: unknown
+  children?: OrganizationUserTreeView[]
 }
 
 export interface OrganizationView {
@@ -640,10 +640,6 @@ export interface PermissionTreeView {
    * @description 权限 ID
    */
   id: number
-
-  value: number
-
-  label: string
   /**
    * Format: int64
    * @description 创建者
@@ -701,7 +697,7 @@ export interface PermissionTreeView {
   /** @description 是否为根页面（首页入口） */
   rootPage?: boolean
   /** @description 子权限列表 */
-  children?: unknown
+  children?: PermissionTreeView[]
 }
 
 export interface PermissionView {
