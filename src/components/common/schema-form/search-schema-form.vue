@@ -81,7 +81,7 @@ const text = computed(() => ({
 const collapsedVisible = computed(() => props.enableCollapsed && schema.value.length > props.searchShowNumber)
 
 function toggleCollapsed(isCollapsed?: boolean) {
-  collapsed.value = isCollapsed || !collapsed.value
+  collapsed.value = isCollapsed ?? !collapsed.value
 }
 
 defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })

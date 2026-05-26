@@ -149,10 +149,12 @@ function defaultPlaceholder(label: Schema['label']) {
 // 生成placeholder
 export function generatePlaceholder(label: Schema['label'], component: ComponentsName, type?: string) {
   const placeholder = defaultPlaceholder(label)
-  const { isDateComponent, isInputComponent, isSelectComponent } = componentFunction[component]
+  const { isDateComponent, isInputComponent, isSelectComponent } = componentFunction[component] ?? {}
   //  处理日期范围类型
-  if (isDateComponent && type?.includes('range'))
-    return [placeholder[type][0], placeholder[type][1]]
+  if (isDateComponent && type?.includes('range')) {
+    const rangePlaceholder = placeholder[type as keyof typeof placeholder]
+    return isArray(rangePlaceholder) ? [rangePlaceholder[0], rangePlaceholder[1]] : undefined
+  }
 
   else if (isInputComponent)
     return placeholder.input
@@ -164,7 +166,7 @@ export function generatePlaceholder(label: Schema['label'], component: Component
 // 生成规则
 export function generateRule(label: string, component: ComponentsName): FormItemRule {
   const placeholder = defaultPlaceholder(label)
-  const { isInputComponent, isSelectComponent } = componentFunction[component]
+  const { isInputComponent, isSelectComponent } = componentFunction[component] ?? {}
   let message: string = placeholder.default
 
   if (isInputComponent)

@@ -32,10 +32,10 @@ const { RenderUnoIcon } = renderIcon()
 const itemEl = useCurrentElement<HTMLElement>()
 const index = elementIndex(itemEl)
 
-// 唯一标识
+// 鍞竴鏍囪瘑
 const uniqueIdentifier = computed(() => `${props.id}-${index.value}`)
 
-// 回调参数
+// 鍥炶皟鍙傛暟
 const callbackParams = computed(() => ({
   schema: schema.value,
   model: model.value,
@@ -50,7 +50,7 @@ const gridItemPropsMap = computed(() => {
   return (isNumber(item) ? { span: item } : item) as GridItemProps
 })
 
-// 执行回调函数并返回原值
+// 鎵ц鍥炶皟鍑芥暟骞惰繑鍥炲師鍊?
 function callbackParamsFunction<T = never>(value: T | CallbackParamsFunction<any, any, T>) {
   return isFunction(value)
     ? value(callbackParams.value)
@@ -81,7 +81,7 @@ const FormItem = defineComponent(() => {
 
       return isAutoRules ? generateRule(schema.value.label as string, schema.value.component!) : undefined
     }
-    // 处理规则预设
+    // 澶勭悊瑙勫垯棰勮
     if (typeof rule === 'string')
       return handleRulePresets(rule)
     return rule
@@ -89,31 +89,31 @@ const FormItem = defineComponent(() => {
 
   const DynamicComponent = computed(() => schema.value.component ? SCHEMA_RENDER_COMPONENTS[schema.value.component] : undefined)
 
-  // 动态组件属性
+  // 鍔ㄦ€佺粍浠跺睘鎬?
   const dynamicComponentAttribute = computed<Recordable>(() => {
     const { component, componentProps, placeholder, startPlaceholder, endPlaceholder, options, disabled } = schema.value
 
     if (!component)
       return {}
 
-    const { isDateComponent, isTimeComponent, isMapPlaceholder, isMapOptions } = componentFunction[component]
+    const { isDateComponent, isTimeComponent, isMapPlaceholder, isMapOptions } = componentFunction[component] ?? {}
 
-    // 需要映射的Props
+    // 闇€瑕佹槧灏勭殑Props
     const mapProps: Recordable = {}
 
-    // 处理默认日期格式
+    // 澶勭悊榛樿鏃ユ湡鏍煎紡
     if (isDateComponent) {
       mapProps.format = schemaFormProps.defaultDateFormat
       mapProps.valueFormat = schemaFormProps.defaultDateValueFormat
     }
 
-    // 处理默认时间格式
+    // 澶勭悊榛樿鏃堕棿鏍煎紡
     if (isTimeComponent) {
       mapProps.format = schemaFormProps.defaultTimeFormat
       mapProps.valueFormat = schemaFormProps.defaultTimeValueFormat
     }
 
-    // 处理自动生成Placeholder
+    // 澶勭悊鑷姩鐢熸垚Placeholder
     if (schemaFormProps.autoPlaceholder && isString(schema.value.label)) {
       const placeholder = generatePlaceholder(schema.value.label, component, (componentProps as Recordable)?.type)
       if (isArray(placeholder)) {
@@ -125,11 +125,11 @@ const FormItem = defineComponent(() => {
       }
     }
 
-    // 映射placeholder
+    // 鏄犲皠placeholder
     if (placeholder && isMapPlaceholder)
       mapProps.placeholder = placeholder
 
-    // 映射日期范围placeholder
+    // 鏄犲皠鏃ユ湡鑼冨洿placeholder
     if (
       (startPlaceholder || endPlaceholder)
       && isDateComponent
@@ -141,11 +141,11 @@ const FormItem = defineComponent(() => {
         mapProps.endPlaceholder = endPlaceholder
     }
 
-    // 映射 options
+    // 鏄犲皠 options
     if (options && isMapOptions)
       mapProps.options = options
 
-    // 禁用
+    // 绂佺敤
     if (disabled !== undefined || props.disabled !== undefined)
       mapProps.disabled = callbackParamsFunction(disabled) ?? props.disabled
 
@@ -155,15 +155,18 @@ const FormItem = defineComponent(() => {
     }
   })
 
-  // 渲染动态组件
+  // 娓叉煋鍔ㄦ€佺粍浠?
   const renderComponent = () => {
     const component = schema.value.component
     if (!component)
       return
-    if (!DynamicComponent.value)
-      return console.error(`未找到该组件：${component}`)
+    if (!DynamicComponent.value) {
+      const message = `SchemaForm: unknown component "${component}".`
+      console.error(message, schema.value)
+      return <n-alert type="error" title="Schema component error">{message}</n-alert>
+    }
 
-    const { isCheckedBind } = componentFunction[component]
+    const { isCheckedBind } = componentFunction[component] ?? {}
 
     const bindType = schema.value?.vModelBind ? schema.value?.vModelBind : isCheckedBind ? 'checked' : 'value'
 
@@ -172,7 +175,7 @@ const FormItem = defineComponent(() => {
       [`onUpdate:${bindType}`]: v => setModelValue(schema.value.field as string, v),
     }
 
-    // 选项映射 checkbox 组件
+    // 閫夐」鏄犲皠 checkbox 缁勪欢
     const optionsMapCheckboxComponent = (options: OptionType[]) => {
       return options.map(item => (
         <n-checkbox
@@ -184,7 +187,7 @@ const FormItem = defineComponent(() => {
       ))
     }
 
-    // 选项映射 radio 组件
+    // 閫夐」鏄犲皠 radio 缁勪欢
     const optionsMapRadioComponent = (options: OptionType[]) => {
       return options.map(item => (
         <n-radio
@@ -196,7 +199,7 @@ const FormItem = defineComponent(() => {
       ))
     }
 
-    // 动态组件插槽
+    // 鍔ㄦ€佺粍浠舵彃妲?
     const dynamicComponentSlots = () => {
       const componentContent = schema.value.componentContent
       const isOptionsTransformCheckbox = schema.value.component === 'checkboxGroup' && schema.value.options
@@ -207,14 +210,14 @@ const FormItem = defineComponent(() => {
 
       const defaultSlot = (slot: Schema['componentContent']) => ({ default: () => slot })
 
-      // 是否映射 checkbox 组件
+      // 鏄惁鏄犲皠 checkbox 缁勪欢
       if (isOptionsTransformCheckbox)
         return defaultSlot(optionsMapCheckboxComponent(schema.value.options!))
-      // 是否映射 radio 组件
+      // 鏄惁鏄犲皠 radio 缁勪欢
       if (isOptionsTransformRadio)
         return defaultSlot(optionsMapRadioComponent(schema.value.options!))
 
-      // 组件默认插槽内容
+      // 缁勪欢榛樿鎻掓Ы鍐呭
       const content = callbackParamsFunction(componentContent)
 
       if (isArray(content) || isString(content) || isVNode(content))
@@ -247,11 +250,11 @@ const FormItem = defineComponent(() => {
   }
 
   const renderFormItemSlots = () => {
-    // 处理默认插槽
+    // 澶勭悊榛樿鎻掓Ы
     const defaultSlot = () => {
       return () => schema.value.contentSlot ? slots.default?.() : renderComponent()
     }
-    // 处理label
+    // 澶勭悊label
     const labelSlot = () => {
       if (!schema.value.label)
         return
@@ -293,7 +296,7 @@ const FormItem = defineComponent(() => {
   )
 })
 
-// 添加 item label width
+// 娣诲姞 item label width
 watch([itemEl, () => schema.value.label], async () => {
   await nextTick()
   if (!itemEl.value || index.value === -1 || props.id === undefined)
@@ -309,7 +312,7 @@ watch([itemEl, () => schema.value.label], async () => {
 })
 
 onUnmounted(() => {
-  // 删除 item
+  // 鍒犻櫎 item
   itemsDataMap.delete(uniqueIdentifier.value)
 })
 </script>
@@ -334,8 +337,8 @@ onUnmounted(() => {
 }
 
 :deep(.n-form-item-label__text) {
-  white-space: nowrap; /* 防止文本换行 */
-  overflow: hidden; /* 超出部分隐藏 */
-  text-overflow: ellipsis; /* 溢出的文本显示省略号 */
+  white-space: nowrap; /* 闃叉鏂囨湰鎹㈣ */
+  overflow: hidden; /* 瓒呭嚭閮ㄥ垎闅愯棌 */
+  text-overflow: ellipsis; /* 婧㈠嚭鐨勬枃鏈樉绀虹渷鐣ュ彿 */
 }
 </style>
