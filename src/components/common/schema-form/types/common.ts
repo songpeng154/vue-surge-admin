@@ -19,7 +19,7 @@ export interface SchemaItemData {
   field: string
 
   // item 标签宽度
-  labelWidth: number
+  labelWidth?: number
 }
 
 // 回调参数
@@ -146,7 +146,7 @@ export interface Schema<
   gridItemProps?: MaybeRef<number | GridItemProps>
 
   // 规则
-  rule?: MaybeRef<RulePresets | FormItemRule | FormItemRule[]>
+  rules?: MaybeRef<RulePresets | FormItemRule | FormItemRule[]>
 
   // 该formItem是否隐藏
   hide?: MaybeRef<boolean> | CallbackParamsFunction<TForm, UnwrapRef<DComponentsName>, boolean>
@@ -189,7 +189,7 @@ export interface SchemaFormCommonProps extends Partial<Omit<FormSetupProps, 'onS
   gridProps?: GridProps
 
   // 是否隐藏操作按钮
-  hideActionButton?: boolean
+  showActions?: boolean
 
   // 默认日期组件格式
   defaultDateFormat?: string
@@ -204,14 +204,14 @@ export interface SchemaFormCommonProps extends Partial<Omit<FormSetupProps, 'onS
   defaultTimeValueFormat?: string
 
   // 校验失败时自动滚动到对应的字段
-  autoScrollToFailField?: boolean
+  scrollToFirstError?: boolean
 
   // 自动placeholder (item的label的类型为string才会生效，优先级最低)
   autoPlaceholder?: boolean
 
   // TODO:优化，支持生成其他的类型
   // 自动规则校验 (当showRequireMark为真的时候，会根据label自动生成校验提示信息,label的类型为string才会生效，优先级最低)
-  autoRules?: boolean
+  autoRequiredRule?: boolean
 
   // 自动标签宽度 (优先级最低)
   autoLabelWidth?: boolean
@@ -302,13 +302,13 @@ export interface SchemaFormCommonEmits {
 // 通用插槽
 export interface SchemaFormCommonSlots {
   // 自定义操作按钮
-  customActionButton: () => any
+  actions: () => any
 
   // 自定义按钮前面
-  buttonBefore: () => any
+  actionsBefore: () => any
 
   // 自定义按钮后面
-  buttonAfter: () => any
+  actionsAfter: () => any
 }
 
 // 通用方法

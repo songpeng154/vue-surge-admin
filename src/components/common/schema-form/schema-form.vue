@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import type {
-  SchemaFormExpose,
-  SchemaFormProps,
-  SchemaFormSlots,
-} from '@/components/common/schema-form/types/base.ts'
+import type { SchemaFormExpose, SchemaFormProps, SchemaFormSlots } from '@/components/common/schema-form/types/base.ts'
 import type { UnwrapSchema } from '@/components/common/schema-form/types/common.ts'
-import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
-import useOmitProps from '@/hooks/common/omit-props.ts'
+import SchemaFormActions from '@/components/common/schema-form/components/schema-form-actions.vue'
+import { exposeSchemaForm, useSchemaFormController } from '@/components/common/schema-form/core/controller'
 
 const props = withDefaults(defineProps<SchemaFormProps>(), {
   autoPlaceholder: true,
-  autoRules: true,
+  autoRequiredRule: true,
   autoLabelWidth: true,
-  autoScrollToFailField: true,
-  hideActionButton: false,
+  scrollToFirstError: true,
+  showActions: true,
   showLabel: true,
   showFeedback: true,
   showRequireMark: undefined,
@@ -35,19 +29,15 @@ const props = withDefaults(defineProps<SchemaFormProps>(), {
 })
 const slots = defineSlots<SchemaFormSlots>()
 
-// 表单模型
 const model = defineModel<Recordable>('model', { required: true })
 const schema = defineModel<UnwrapSchema[]>('schema', { required: true })
 
-// 提供Schema上下文
-useProvideSchemaFormContext(props, model)
-const formProps = useOmitProps(props, ['schema'])
-const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
-// 通用方法
-const { formRef, commonExpose } = useCommonExpose()
-const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
+const { formRef, commonExpose, formProps, formContentSlots } = useSchemaFormController(props, model, slots, {
+  omitFormProps: ['schema'],
+  omitContentSlots: ['actions', 'actionsAfter', 'actionsBefore'],
+})
 
-defineExpose<SchemaFormExpose>(commonExpose)
+defineExpose<SchemaFormExpose>(exposeSchemaForm<SchemaFormExpose>(commonExpose))
 </script>
 
 <template>
@@ -61,29 +51,25 @@ defineExpose<SchemaFormExpose>(commonExpose)
         <slot :name="key" v-bind="scope || {}" />
       </template>
       <grid-item
-        v-if="!props.hideActionButton"
+        v-if="props.showActions"
         suffix
         :span="24"
-        class="flex gap-[12px] items-center justify-end"
       >
-        <slot name="buttonBefore" />
-        <slot name="customActionButton">
-          <n-button
-            v-if="!hideReset"
-            :loading="props.resetLoading"
-            @click="handleReset"
-          >
-            {{ props.resetText }}
-          </n-button>
-          <n-button
-            type="primary"
-            :loading="props.submitLoading"
-            @click="handleSubmit"
-          >
-            {{ props.submitText }}
-          </n-button>
-        </slot>
-        <slot name="buttonAfter" />
+        <SchemaFormActions
+          v-model:model="model"
+          :form-props="props"
+          :expose="commonExpose"
+        >
+          <template #actionsBefore>
+            <slot name="actionsBefore" />
+          </template>
+          <template v-if="$slots.actions" #actions>
+            <slot name="actions" />
+          </template>
+          <template #actionsAfter>
+            <slot name="actionsAfter" />
+          </template>
+        </SchemaFormActions>
       </grid-item>
     </schema-form-content>
   </schema-form-wrap>

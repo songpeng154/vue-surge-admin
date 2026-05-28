@@ -76,7 +76,7 @@ const schema = ref<DefineSchema<typeof form.value>[]>([
     label: '邮箱',
     component: 'autoComplete',
     options: emailAutoComplete,
-    rule: 'mail',
+    rules: 'mail',
   },
   {
     field: 'status',

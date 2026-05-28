@@ -44,6 +44,16 @@ export const ROUTE_AUTH: AppRouteRecordRaw = {
   ],
 }
 
+export const ROUTE_SCHEMA_FORM_BUG_REPRO: AppRouteRecordRaw = {
+  path: '/schema-form-bug-repro',
+  component: 'basic-view',
+  meta: {
+    title: 'Schema Form Bug Repro',
+    ignoreAuth: true,
+    hideMenu: true,
+  },
+}
+
 // 未匹配到页面
 export const ROUTE_NOT_FOUND: AppRouteRecordRaw = {
   path: '/:NotFound(.*)*',
@@ -51,4 +61,4 @@ export const ROUTE_NOT_FOUND: AppRouteRecordRaw = {
   meta: { title: RouterConstant.NOT_FOUND_TITLE },
 }
 
-export default [ROUTE_ROOT, ROUTE_AUTH, ROUTE_NOT_FOUND]
+export default [ROUTE_ROOT, ROUTE_AUTH, ROUTE_SCHEMA_FORM_BUG_REPRO, ROUTE_NOT_FOUND]

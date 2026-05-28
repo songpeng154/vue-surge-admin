@@ -21,7 +21,7 @@ const schema = reactive<DefineSchema<typeof form>[]>([
     componentProps: {
       placeholder: '请输入用户名',
     },
-    rule: {
+    rules: {
       message: '请输入账号',
       required: true,
     },
@@ -33,7 +33,7 @@ const schema = reactive<DefineSchema<typeof form>[]>([
       type: 'password',
       placeholder: '请输入密码',
     },
-    rule: {
+    rules: {
       message: '请输入密码',
       required: true,
     },
@@ -44,11 +44,11 @@ const schema = reactive<DefineSchema<typeof form>[]>([
     componentProps: {
       placeholder: '请输入手机号',
     },
-    rule: 'phone',
+    rules: 'phone',
   },
   {
     contentSlot: 'verificationCode',
-    rule: {
+    rules: {
       trigger: 'blur',
       message: '请输入验证码',
       required: true,
@@ -71,7 +71,7 @@ function handleLogin() {
     <schema-form
       :model="form"
       :show-label="false"
-      hide-action-button
+      :show-actions="false"
       :schema="schema"
     >
       <template #verificationCode>

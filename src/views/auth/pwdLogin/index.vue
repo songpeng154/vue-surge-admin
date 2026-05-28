@@ -48,7 +48,7 @@ const schema = ref<DefineSchema<AccountLoginDto>[]>([
     componentContent: {
       prefix: () => RenderUnoIcon('i-ant-design:user-outlined'),
     },
-    rule: {
+    rules: {
       message: '请输入账号',
       required: true,
     },
@@ -64,7 +64,7 @@ const schema = ref<DefineSchema<AccountLoginDto>[]>([
     componentContent: {
       prefix: () => RenderUnoIcon('i-ant-design:lock-outlined'),
     },
-    rule: {
+    rules: {
       message: '请输入密码',
       required: true,
     },
@@ -99,7 +99,7 @@ function handleRememberMe() {
       v-model:schema="schema"
       :show-label="false"
       :model="form"
-      hide-action-button
+      :show-actions="false"
     >
       <template #action>
         <n-flex

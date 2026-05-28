@@ -24,7 +24,7 @@ export interface SearchSchemaFormProps extends SchemaFormCommonProps {
   collapsedText?: string
 
   // 未折叠文字 (默认:收起)
-  unCollapsedText?: string
+  expandedText?: string
 }
 
 export interface SearchSchemaFormExpose extends SchemaFormCommonExpose {

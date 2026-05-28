@@ -1,8 +1,8 @@
 import type { GridItemProps } from '@/components/common/grid/types'
-import type { UnwrapSchema } from '@/components/common/schema-form/types/common.ts'
+import type { NormalizedSchema } from '@/components/common/schema-form/core/types'
 
 export interface SchemaFormItemProps {
-  schema: UnwrapSchema
+  schema: NormalizedSchema
 
   id: string
 

@@ -20,7 +20,7 @@
 
 <!--const { getModelValue } = useProvideSchemaFormContext(props, model)-->
 <!--const formProps = useOmitProps(props, [ 'schema', 'active','preText','preLoading','nextText','nextLoading','stepsProps','onPre','onNext' ])-->
-<!--const formContentSlots = useOmitProps(slots, [ 'customActionButton', 'buttonAfter', 'buttonBefore' ])-->
+<!--const formContentSlots = useOmitProps(slots, [ 'actions', 'actionsAfter', 'actionsBefore' ])-->
 <!--const { formRef, commonExpose } = useExpose()-->
 <!--const { handleSubmit } = useMethod(props, commonExpose, model)-->
 
@@ -73,12 +73,12 @@
 <!--          <slot :name="key" v-bind="scope||{}" />-->
 <!--        </template>-->
 <!--        <a-col-->
-<!--          v-if="!props.hideActionButton"-->
+<!--          v-if="props.showActions"-->
 <!--          :span="24"-->
 <!--          class="flex-inline justify-end items-center gap-[12px] "-->
 <!--        >-->
-<!--          <slot name="buttonBefore" />-->
-<!--          <slot name="customActionButton">-->
+<!--          <slot name="actionsBefore" />-->
+<!--          <slot name="actions">-->
 <!--            <a-button-->
 <!--              v-if="active!==1"-->
 <!--              :loading="props.preLoading"-->
@@ -102,7 +102,7 @@
 <!--              {{ props.submitText }}-->
 <!--            </a-button>-->
 <!--          </slot>-->
-<!--          <slot name="buttonAfter" />-->
+<!--          <slot name="actionsAfter" />-->
 <!--        </a-col>-->
 <!--      </schema-form-content>-->
 <!--    </template>-->

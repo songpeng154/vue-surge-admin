@@ -1,27 +1,27 @@
-/* --------------分组表单-------------- */
+/* --------------鍒嗙粍琛ㄥ崟-------------- */
 
-import type { UnwrapRef } from 'vue'
 import type { GridItemProps, GridProps } from '@/components/common/grid/types'
 import type {
   DefineSchema,
   SchemaFormCommonExpose,
   SchemaFormCommonProps,
   SchemaFormCommonSlots,
+  UnwrapSchema,
 } from '@/components/common/schema-form/types/common.ts'
-// 模块表单结构
+// 妯″潡琛ㄥ崟缁撴瀯
 import type { ComponentsName } from '@/components/common/schema-form/types/component.ts'
 
-// 回调参数
+// 鍥炶皟鍙傛暟
 export interface GroupCallbackParams<
   TForm extends Recordable = Recordable,
   DComponentsName extends ComponentsName = ComponentsName,
 > {
-  group: UnwrapGroupSchema<TForm, DComponentsName>
+  group: GroupCallbackSchema<TForm, DComponentsName>
 
   model: TForm
 }
 
-// 组回调参数
+// 缁勫洖璋冨弬鏁?
 export type GroupCallbackParamsFunction<
   TForm extends Recordable = Recordable,
   DComponentsName extends ComponentsName = ComponentsName,
@@ -33,58 +33,108 @@ export interface DefineGroupSchema<
   TForm extends Recordable = any,
   DComponentsName extends ComponentsName = ComponentsName,
 > {
-  // 模块标题
+  // 妯″潡鏍囬
   title: MaybeRef<string>
 
-  // 帮助提示信息
+  // 甯姪鎻愮ず淇℃伅
   helpMessage?: MaybeRef<string>
 
-  // 是否隐藏
+  // 鏄惁闅愯棌
   hide?: MaybeRef<boolean> | GroupCallbackParamsFunction<TForm, DComponentsName, boolean>
 
-  // 表单
+  // 琛ㄥ崟
   form: DefineSchema<TForm, DComponentsName>[]
 
-  // 是否折叠
+  // 鏄惁鎶樺彔
   collapsed?: boolean
 
-  // 折叠时显示的行数
-  notCollapsedRows?: number
+  // 鎶樺彔鏃舵樉绀虹殑琛屾暟
+  collapsedRows?: number
 
-  // 是否隐藏折叠按钮
-  isHidCollapseButton?: MaybeRef<boolean>
+  // 鏄惁闅愯棌鎶樺彔鎸夐挳
+  hideCollapseButton?: MaybeRef<boolean>
 
-  // TODO:未完成
-  // 禁用表单
+  // TODO:鏈畬鎴?
+  // 绂佺敤琛ㄥ崟
   disabled?: MaybeRef<boolean>
 
-  // grid item组件属性
+  // grid item缁勪欢灞炴€?
   gridItemProps?: MaybeRef<number | GridItemProps>
 
-  // grid组件属性
+  // grid缁勪欢灞炴€?
   gridProps?: MaybeRef<GridProps>
 }
 
 export type UnwrapGroupSchema<
   TForm extends Recordable = any,
   DComponentsName extends ComponentsName = ComponentsName,
-> = UnwrapRef<DefineGroupSchema<TForm, DComponentsName>>
+> = {
+  title: string
+  helpMessage?: string
+  hide?: boolean | GroupCallbackParamsFunction<TForm, DComponentsName, boolean>
+  form: UnwrapSchema<TForm, DComponentsName>[]
+  collapsed?: boolean
+  collapsedRows?: number
+  hideCollapseButton?: boolean
+  disabled?: boolean
+  gridItemProps?: number | GridItemProps
+  gridProps?: GridProps
+}
+
+export interface RuntimeGroupBaseSchema<
+  TForm extends Recordable = any,
+  DComponentsName extends ComponentsName = ComponentsName,
+> {
+  key: string
+  title: string
+  helpMessage?: string
+  form: UnwrapSchema<TForm, DComponentsName>[]
+  collapsed: boolean
+  collapsedRows: number
+  hideCollapseButton?: boolean
+  disabled?: boolean
+  gridItemProps?: number | GridItemProps
+  gridProps?: GridProps
+}
+
+export interface GroupCallbackSchema<
+  TForm extends Recordable = any,
+  DComponentsName extends ComponentsName = ComponentsName,
+> {
+  key?: string
+  title: string
+  helpMessage?: string
+  form: UnwrapSchema<TForm, DComponentsName>[]
+  collapsed?: boolean
+  collapsedRows?: number
+  hideCollapseButton?: boolean
+  disabled?: boolean
+  gridItemProps?: number | GridItemProps
+  gridProps?: GridProps
+}
+
+export interface RuntimeGroupSchema<
+  TForm extends Recordable = any,
+  DComponentsName extends ComponentsName = ComponentsName,
+> extends RuntimeGroupBaseSchema<TForm, DComponentsName> {
+  hide?: boolean | GroupCallbackParamsFunction<TForm, DComponentsName, boolean>
+}
 
 export interface GroupSchemaFormProps extends SchemaFormCommonProps {
-  // schema 配置
+  // schema 閰嶇疆
   schema: UnwrapGroupSchema[]
 
-  // 默认是否折叠
+  // 榛樿鏄惁鎶樺彔
   defaultCollapsed?: boolean
 
-  // 默认不折叠的行数
-  defaultNotCollapsedRows?: number
+  // 榛樿涓嶆姌鍙犵殑琛屾暟
+  defaultCollapsedRows?: number
 
-  // 折叠文字 (默认:展开)
+  // 鎶樺彔鏂囧瓧 (榛樿:灞曞紑)
   collapsedText?: string
 
-  // 未折叠文字 (默认:收起)
-  unCollapsedText?: string
+  // 鏈姌鍙犳枃瀛?(榛樿:鏀惰捣)
+  expandedText?: string
 }
 
 export interface GroupSchemaFormExpose extends SchemaFormCommonExpose {
@@ -92,12 +142,13 @@ export interface GroupSchemaFormExpose extends SchemaFormCommonExpose {
 }
 
 export interface GroupSchemaFormSlots extends SchemaFormCommonSlots {
-  // 自定义group标题
-  groupTitle: (props: { config: UnwrapGroupSchema }) => any
+  // 鑷畾涔塯roup鏍囬
+  groupTitle: (props: { config: RuntimeGroupSchema }) => any
 
-  // 自定义折叠按钮
+  // 鑷畾涔夋姌鍙犳寜閽?
   collapsedButton: (props: {
-    config: UnwrapGroupSchema
-    toggleCollapsed: (config: UnwrapGroupSchema, isCollapsed: boolean) => void
+    config: RuntimeGroupSchema
+    overflow: boolean
+    toggleCollapsed: (config: RuntimeGroupSchema, isCollapsed?: boolean) => void
   }) => any
 }

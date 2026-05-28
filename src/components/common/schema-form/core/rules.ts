@@ -4,102 +4,7 @@ import type { ComponentsName } from '@/components/common/schema-form/types/compo
 import { isString } from 'es-toolkit'
 import { isArray } from 'es-toolkit/compat'
 import RegUtils from '@/utils/reg'
-
-type ComponentFunction = Record<ComponentsName, {
-  // 是否映射 占位符
-  isMapPlaceholder?: boolean
-
-  // 是否映射 选项
-  isMapOptions?: boolean
-
-  // 是否是选择类型的组件
-  isSelectComponent?: boolean
-
-  // 是否是输入类型的组件
-  isInputComponent?: boolean
-
-  // 是否日期类型的组件
-  isDateComponent?: boolean
-
-  // 是否时间类型的组件
-  isTimeComponent?: boolean
-
-  // 组件的双向绑定是否是 Checked
-  isCheckedBind?: boolean
-}>
-
-export const componentFunction: ComponentFunction = {
-  autoComplete: {
-    isInputComponent: true,
-    isMapOptions: true,
-    isMapPlaceholder: true,
-  },
-  cascader: {
-    isSelectComponent: true,
-    isMapOptions: true,
-    isMapPlaceholder: true,
-  },
-  colorPicker: {
-    isSelectComponent: true,
-  },
-  checkbox: {
-    isCheckedBind: true,
-  },
-  checkboxGroup: {},
-  datePicker: {
-    isDateComponent: true,
-    isMapPlaceholder: true,
-  },
-  dynamicInput: {
-    isMapPlaceholder: true,
-  },
-  dynamicTags: {},
-  input: {
-    isInputComponent: true,
-    isMapPlaceholder: true,
-  },
-  inputNumber: {
-    isInputComponent: true,
-    isMapPlaceholder: true,
-  },
-  mention: {
-    isInputComponent: true,
-    isMapPlaceholder: true,
-    isMapOptions: true,
-  },
-  radio: {
-    isCheckedBind: true,
-  },
-  radioGroup: {
-  },
-  select: {
-    isSelectComponent: true,
-    isMapPlaceholder: true,
-    isMapOptions: true,
-  },
-  timePicker: {
-    isSelectComponent: true,
-    isTimeComponent: true,
-    isMapPlaceholder: true,
-  },
-  transfer: {
-    isMapOptions: true,
-  },
-  treeSelect: {
-    isSelectComponent: true,
-    isMapPlaceholder: true,
-    isMapOptions: true,
-  },
-  upload: {},
-  rate: {},
-  switch: {},
-  slider: {},
-  iconSelect: {
-    isSelectComponent: true,
-    isMapOptions: true,
-    isMapPlaceholder: true,
-  },
-}
+import { getSchemaComponentAdapter } from '@/components/common/schema-form/core/registry'
 
 // 规则预设
 const rulePresets: RulePresetsType = {
@@ -130,48 +35,42 @@ const rulePresets: RulePresetsType = {
   },
 }
 
-// 默认占位符
 function defaultPlaceholder(label: Schema['label']) {
   const l = isString(label) ? label : ''
 
   return {
     daterange: ['开始日期', '结束日期'],
     datetimerange: ['开始日期时间', '结束日期时间'],
-    yearrange: ['开始年', '结束年'],
-    monthrange: ['开始月', '结束月'],
-    quarterrange: ['开始季度', '结束季度'],
     input: `请输入${l}`,
     pick: `请选择${l}`,
     default: `${l}是必填项`,
   }
 }
 
-// 生成placeholder
 export function generatePlaceholder(label: Schema['label'], component: ComponentsName, type?: string) {
   const placeholder = defaultPlaceholder(label)
-  const { isDateComponent, isInputComponent, isSelectComponent } = componentFunction[component] ?? {}
-  //  处理日期范围类型
-  if (isDateComponent && type?.includes('range')) {
+  const adapter = getSchemaComponentAdapter(component)
+
+  if (adapter?.valueType === 'date' && type?.includes('range')) {
     const rangePlaceholder = placeholder[type as keyof typeof placeholder]
     return isArray(rangePlaceholder) ? [rangePlaceholder[0], rangePlaceholder[1]] : undefined
   }
 
-  else if (isInputComponent)
+  if (adapter?.valueType === 'input')
     return placeholder.input
 
-  else if (isSelectComponent)
+  if (adapter?.valueType === 'select')
     return placeholder.pick
 }
 
-// 生成规则
 export function generateRule(label: string, component: ComponentsName): FormItemRule {
   const placeholder = defaultPlaceholder(label)
-  const { isInputComponent, isSelectComponent } = componentFunction[component] ?? {}
+  const adapter = getSchemaComponentAdapter(component)
   let message: string = placeholder.default
 
-  if (isInputComponent)
+  if (adapter?.valueType === 'input')
     message = placeholder.input
-  else if (isSelectComponent)
+  else if (adapter?.valueType === 'select')
     message = placeholder.pick
 
   return {
@@ -187,11 +86,10 @@ export function generateRule(label: string, component: ComponentsName): FormItem
 
       return true
     },
-    trigger: isInputComponent ? 'blur' : 'change',
+    trigger: adapter?.valueType === 'input' ? 'blur' : 'change',
   }
 }
 
-// 处理规则预设
 export function handleRulePresets(rule: RulePresets): FormItemRule {
   return {
     required: true,

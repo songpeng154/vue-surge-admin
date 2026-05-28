@@ -6,16 +6,14 @@ import type {
   SearchSchemaFormSlots,
 } from '@/components/common/schema-form/types/search.ts'
 import { take } from 'es-toolkit'
-import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
-import useOmitProps from '@/hooks/common/omit-props.ts'
+import SchemaFormActions from '@/components/common/schema-form/components/schema-form-actions.vue'
+import { exposeSchemaForm, useSchemaFormController } from '@/components/common/schema-form/core/controller'
 
 const props = withDefaults(defineProps<SearchSchemaFormProps>(), {
   autoPlaceholder: true,
-  autoRules: true,
+  autoRequiredRule: true,
   autoLabelWidth: true,
-  hideActionButton: false,
+  showActions: true,
   showLabel: true,
   showFeedback: true,
   showRequireMark: undefined,
@@ -45,46 +43,37 @@ const props = withDefaults(defineProps<SearchSchemaFormProps>(), {
   searchShowNumber: 3,
   enableCollapsed: true,
   collapsedText: '展开',
-  unCollapsedText: '收起',
+  expandedText: '收起',
 })
 const slots = defineSlots<SearchSchemaFormSlots>()
 
-// 表单模型
 const model = defineModel<Recordable>('model', { required: true })
 const schema = defineModel<UnwrapSchema[]>('schema', { required: true })
-// 是否折叠
 const collapsed = defineModel<boolean>('collapsed', { default: true })
 
-// 提供Schema上下文
-useProvideSchemaFormContext(props, model)
-const formProps = useOmitProps(props, ['searchShowNumber', 'schema', 'collapsed', 'enableCollapsed', 'collapsedText', 'unCollapsedText'])
-const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore'])
+const { formRef, commonExpose, formProps, formContentSlots } = useSchemaFormController(props, model, slots, {
+  omitFormProps: ['searchShowNumber', 'schema', 'collapsed', 'enableCollapsed', 'collapsedText', 'expandedText'],
+  omitContentSlots: ['actions', 'actionsAfter', 'actionsBefore'],
+})
 
-// 通用方法
-const { formRef, commonExpose } = useCommonExpose()
-const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
-
-// 搜索Schema
 const searchSchemas = computed(() => {
   if (!props.enableCollapsed || !collapsed.value)
     return schema.value
   return take(schema.value, props.searchShowNumber)
 })
 
-// 展开收起文案
 const text = computed(() => ({
-  text: !collapsed.value ? props.unCollapsedText : props.collapsedText,
+  text: !collapsed.value ? props.expandedText : props.collapsedText,
   icon: !collapsed.value ? 'i-ic:outline-keyboard-arrow-up' : 'i-ic:outline-keyboard-arrow-down',
 }))
 
-// 折叠按钮是否显示
 const collapsedVisible = computed(() => props.enableCollapsed && schema.value.length > props.searchShowNumber)
 
 function toggleCollapsed(isCollapsed?: boolean) {
   collapsed.value = isCollapsed ?? !collapsed.value
 }
 
-defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })
+defineExpose<SearchSchemaFormExpose>(exposeSchemaForm<SearchSchemaFormExpose>(commonExpose, { toggleCollapsed }))
 </script>
 
 <template>
@@ -98,27 +87,22 @@ defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })
         <slot :name="key" v-bind="scope || {}" />
       </template>
       <grid-item
-        v-if="!props.hideActionButton"
+        v-if="props.showActions"
         :span="4"
         suffix
       >
-        <div class="flex gap-[12px] justify-end">
-          <slot name="buttonBefore" />
-          <slot name="customActionButton">
-            <n-button
-              v-if="!hideReset"
-              :loading="props.resetLoading"
-              @click="handleReset"
-            >
-              {{ props.resetText }}
-            </n-button>
-            <n-button
-              type="primary"
-              :loading="props.submitLoading"
-              @click="handleSubmit"
-            >
-              {{ props.submitText }}
-            </n-button>
+        <SchemaFormActions
+          v-model:model="model"
+          :form-props="props"
+          :expose="commonExpose"
+        >
+          <template #actionsBefore>
+            <slot name="actionsBefore" />
+          </template>
+          <template v-if="$slots.actions" #actions>
+            <slot name="actions" />
+          </template>
+          <template #extra>
             <n-button
               v-if="collapsedVisible"
               type="primary"
@@ -130,16 +114,15 @@ defineExpose<SearchSchemaFormExpose>({ ...commonExpose, toggleCollapsed })
               </template>
               {{ text.text }}
             </n-button>
-          </slot>
-          <slot name="buttonAfter" />
-        </div>
+          </template>
+          <template #actionsAfter>
+            <slot name="actionsAfter" />
+          </template>
+        </SchemaFormActions>
       </grid-item>
     </schema-form-content>
   </schema-form-wrap>
 </template>
 
 <style scoped lang="scss">
-:deep(.ant-form-item) {
-  margin-bottom: 0;
-}
 </style>

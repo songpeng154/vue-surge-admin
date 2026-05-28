@@ -1,324 +1,259 @@
 <script setup lang="tsx">
 import type { GridItemProps } from '@/components/common/grid/types'
 import type { SchemaFormItemProps } from '@/components/common/schema-form/components/schema-form-item/types/type.ts'
-import type {
-  CallbackParams,
-  CallbackParamsFunction,
-  OptionType,
-  Schema,
-  UnwrapSchema,
-} from '@/components/common/schema-form/types/common.ts'
-import { isFunction, isString, isUndefined, omitBy } from 'es-toolkit'
-import { get, isArray, isNumber } from 'es-toolkit/compat'
-import { computed, isVNode, useSlots } from 'vue'
+import type { CallbackParams, OptionType, Schema } from '@/components/common/schema-form/types/common.ts'
+import { isString, omitBy } from 'es-toolkit'
+import { isArray, isNumber } from 'es-toolkit/compat'
+import { isVNode, useSlots } from 'vue'
 import { useSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import {
-  componentFunction,
-  generatePlaceholder,
-  generateRule,
-  handleRulePresets,
-} from '@/components/common/schema-form/utils'
-import { SCHEMA_RENDER_COMPONENTS } from '@/components/common/schema-form/utils/components'
-import elementIndex from '@/hooks/common/element-index.ts'
-import useOmitProps from '@/hooks/common/omit-props.ts'
 import renderIcon from '@/hooks/components/render-icon.ts'
 
 const props = defineProps<SchemaFormItemProps>()
-const schema = defineModel<UnwrapSchema>('schema', { required: true })
-
 const slots = useSlots()
-const { schemaFormProps, model, getModelValue, setModelValue, maxLabelWidth, itemsDataMap } = useSchemaFormContext()!
+const { getModelValue, setModelValue, maxLabelWidth, itemsDataMap, schemaFormProps } = useSchemaFormContext()!
 const { RenderUnoIcon } = renderIcon()
 const itemEl = useCurrentElement<HTMLElement>()
-const index = elementIndex(itemEl)
+const uniqueIdentifier = computed(() => props.schema.key)
 
-// 鍞竴鏍囪瘑
-const uniqueIdentifier = computed(() => `${props.id}-${index.value}`)
-
-// 鍥炶皟鍙傛暟
-const callbackParams = computed(() => ({
-  schema: schema.value,
-  model: model.value,
-  value: schema.value.field ? get(model.value, schema.value.field) : undefined,
-  field: schema.value.field,
-}) as CallbackParams)
-
-const isHide = computed(() => callbackParamsFunction<boolean | undefined>(schema.value.hide) ?? true)
-
+const isVisible = computed(() => props.schema.visible)
 const gridItemPropsMap = computed(() => {
-  const item = schema.value.gridItemProps || props.gridItemProps || schemaFormProps.gridItemProps
+  const item = props.schema.gridItemProps || props.gridItemProps || schemaFormProps.gridItemProps
   return (isNumber(item) ? { span: item } : item) as GridItemProps
 })
 
-// 鎵ц鍥炶皟鍑芥暟骞惰繑鍥炲師鍊?
-function callbackParamsFunction<T = never>(value: T | CallbackParamsFunction<any, any, T>) {
-  return isFunction(value)
-    ? value(callbackParams.value)
-    : value
+const labelWidth = computed(() => {
+  const raw = props.schema.raw
+  if (raw.labelWidth)
+    return raw.labelWidth
+  if (schemaFormProps.labelWidth)
+    return schemaFormProps.labelWidth
+  return schemaFormProps.autoLabelWidth && maxLabelWidth.value && schemaFormProps.labelPlacement !== 'top' ? `${maxLabelWidth.value}px` : undefined
+})
+
+const shouldMeasureLabel = computed(() => Boolean(
+  schemaFormProps.autoLabelWidth
+  && schemaFormProps.labelPlacement !== 'top'
+  && props.schema.field
+  && isVisible.value
+  && !props.schema.raw.labelWidth
+  && !schemaFormProps.labelWidth,
+))
+
+function optionsMapCheckboxComponent(options: OptionType[]) {
+  return options.map(item => (
+    <n-checkbox
+      value={item.value}
+      disabled={item.disabled}
+    >
+      { item.label }
+    </n-checkbox>
+  ))
 }
 
-const FormItem = defineComponent(() => {
-  const formItemProps = useOmitProps(schema.value, [
-    'field',
-    'component',
-    'label',
-    'componentProps',
-    'componentContent',
-    'hide',
-    'rule',
-    'tooltip',
-    'gridItemProps',
-    'contentSlot',
-    'slot',
-  ])
+function optionsMapRadioComponent(options: OptionType[]) {
+  return options.map(item => (
+    <n-radio
+      value={item.value}
+      disabled={item.disabled}
+    >
+      { item.label }
+    </n-radio>
+  ))
+}
 
-  // formItem rule
-  const formItemRules = computed(() => {
-    const rule = schema.value.rule
-    if (!rule) {
-      const isRequire = Boolean(schema.value.showRequireMark ?? schemaFormProps.showRequireMark)
-      const isAutoRules = Boolean(schemaFormProps.autoRules && isRequire && schema.value.component && isString(schema.value.label))
+function renderTooltip(tooltip?: string) {
+  return (
+    <n-tooltip>
+      { {
+        default: () => tooltip,
+        trigger: () => RenderUnoIcon('i-ic:outline-help', {
+          class: 'ml-5px mb-4px',
+        }),
+      } }
+    </n-tooltip>
+  )
+}
 
-      return isAutoRules ? generateRule(schema.value.label as string, schema.value.component!) : undefined
-    }
-    // 澶勭悊瑙勫垯棰勮
-    if (typeof rule === 'string')
-      return handleRulePresets(rule)
-    return rule
-  })
+function renderComponentSlots() {
+  const raw = props.schema.raw
+  const componentContent = raw.componentContent
+  const isOptionsTransformCheckbox = raw.component === 'checkboxGroup' && raw.options
+  const isOptionsTransformRadio = raw.component === 'radioGroup' && raw.options
 
-  const DynamicComponent = computed(() => schema.value.component ? SCHEMA_RENDER_COMPONENTS[schema.value.component] : undefined)
+  if (!componentContent && !isOptionsTransformCheckbox && !isOptionsTransformRadio)
+    return undefined
 
-  // 鍔ㄦ€佺粍浠跺睘鎬?
-  const dynamicComponentAttribute = computed<Recordable>(() => {
-    const { component, componentProps, placeholder, startPlaceholder, endPlaceholder, options, disabled } = schema.value
+  const defaultSlot = (slot: Schema['componentContent']) => ({ default: () => slot })
 
-    if (!component)
-      return {}
+  if (isOptionsTransformCheckbox)
+    return defaultSlot(optionsMapCheckboxComponent(raw.options!))
+  if (isOptionsTransformRadio)
+    return defaultSlot(optionsMapRadioComponent(raw.options!))
 
-    const { isDateComponent, isTimeComponent, isMapPlaceholder, isMapOptions } = componentFunction[component] ?? {}
+  const content = typeof componentContent === 'function'
+    ? (componentContent as (params: CallbackParams) => any)({
+        schema: raw,
+        model: props.schema.model,
+        value: props.schema.field ? getModelValue(props.schema.field) : undefined,
+        field: props.schema.field as any,
+      } as CallbackParams)
+    : componentContent
 
-    // 闇€瑕佹槧灏勭殑Props
-    const mapProps: Recordable = {}
+  if (isArray(content) || isString(content) || isVNode(content))
+    return defaultSlot(content)
 
-    // 澶勭悊榛樿鏃ユ湡鏍煎紡
-    if (isDateComponent) {
-      mapProps.format = schemaFormProps.defaultDateFormat
-      mapProps.valueFormat = schemaFormProps.defaultDateValueFormat
-    }
+  return content
+}
 
-    // 澶勭悊榛樿鏃堕棿鏍煎紡
-    if (isTimeComponent) {
-      mapProps.format = schemaFormProps.defaultTimeFormat
-      mapProps.valueFormat = schemaFormProps.defaultTimeValueFormat
-    }
+function renderSchemaComponent() {
+  const item = props.schema
+  const RawComponent = item.component as any
 
-    // 澶勭悊鑷姩鐢熸垚Placeholder
-    if (schemaFormProps.autoPlaceholder && isString(schema.value.label)) {
-      const placeholder = generatePlaceholder(schema.value.label, component, (componentProps as Recordable)?.type)
-      if (isArray(placeholder)) {
-        mapProps.startPlaceholder = placeholder[0]
-        mapProps.endPlaceholder = placeholder[1]
+  if (item.error) {
+    console.error(item.error, item.raw)
+    return <n-alert type="error" title="Schema component error">{item.error}</n-alert>
+  }
+
+  if (!RawComponent)
+    return undefined
+
+  const modelProp = item.raw.vModelBind || item.adapter?.modelProp || 'value'
+  const modelBind = item.field
+    ? {
+        [modelProp]: getModelValue(item.field),
+        [`onUpdate:${modelProp}`]: (v: any) => setModelValue(item.field!, v),
       }
-      else {
-        mapProps.placeholder = placeholder
-      }
-    }
+    : {}
 
-    // 鏄犲皠placeholder
-    if (placeholder && isMapPlaceholder)
-      mapProps.placeholder = placeholder
+  return (
+    <RawComponent
+      v-slots={renderComponentSlots()}
+      {...modelBind}
+      {...item.componentProps}
+    />
+  )
+}
 
-    // 鏄犲皠鏃ユ湡鑼冨洿placeholder
-    if (
-      (startPlaceholder || endPlaceholder)
-      && isDateComponent
-      && (componentProps as Recordable)?.type.includes('range')
-    ) {
-      if (startPlaceholder)
-        mapProps.startPlaceholder = startPlaceholder
-      if (endPlaceholder)
-        mapProps.endPlaceholder = endPlaceholder
-    }
-
-    // 鏄犲皠 options
-    if (options && isMapOptions)
-      mapProps.options = options
-
-    // 绂佺敤
-    if (disabled !== undefined || props.disabled !== undefined)
-      mapProps.disabled = callbackParamsFunction(disabled) ?? props.disabled
-
-    return {
-      ...mapProps,
-      ...componentProps,
-    }
-  })
-
-  // 娓叉煋鍔ㄦ€佺粍浠?
-  const renderComponent = () => {
-    const component = schema.value.component
-    if (!component)
+function renderFormItemSlots() {
+  const item = props.schema
+  const defaultSlot = () => {
+    return () => item.contentSlot ? slots.default?.() : renderSchemaComponent()
+  }
+  const labelSlot = () => {
+    if (!item.label)
       return
-    if (!DynamicComponent.value) {
-      const message = `SchemaForm: unknown component "${component}".`
-      console.error(message, schema.value)
-      return <n-alert type="error" title="Schema component error">{message}</n-alert>
-    }
-
-    const { isCheckedBind } = componentFunction[component] ?? {}
-
-    const bindType = schema.value?.vModelBind ? schema.value?.vModelBind : isCheckedBind ? 'checked' : 'value'
-
-    const modelBind = {
-      [bindType]: getModelValue(schema.value.field as string),
-      [`onUpdate:${bindType}`]: v => setModelValue(schema.value.field as string, v),
-    }
-
-    // 閫夐」鏄犲皠 checkbox 缁勪欢
-    const optionsMapCheckboxComponent = (options: OptionType[]) => {
-      return options.map(item => (
-        <n-checkbox
-          value={item.value}
-          disabled={item.disabled}
-        >
-          { item.label }
-        </n-checkbox>
-      ))
-    }
-
-    // 閫夐」鏄犲皠 radio 缁勪欢
-    const optionsMapRadioComponent = (options: OptionType[]) => {
-      return options.map(item => (
-        <n-radio
-          value={item.value}
-          disabled={item.disabled}
-        >
-          { item.label }
-        </n-radio>
-      ))
-    }
-
-    // 鍔ㄦ€佺粍浠舵彃妲?
-    const dynamicComponentSlots = () => {
-      const componentContent = schema.value.componentContent
-      const isOptionsTransformCheckbox = schema.value.component === 'checkboxGroup' && schema.value.options
-      const isOptionsTransformRadio = schema.value.component === 'radioGroup' && schema.value.options
-
-      if (!componentContent && !isOptionsTransformCheckbox && !isOptionsTransformRadio)
-        return undefined
-
-      const defaultSlot = (slot: Schema['componentContent']) => ({ default: () => slot })
-
-      // 鏄惁鏄犲皠 checkbox 缁勪欢
-      if (isOptionsTransformCheckbox)
-        return defaultSlot(optionsMapCheckboxComponent(schema.value.options!))
-      // 鏄惁鏄犲皠 radio 缁勪欢
-      if (isOptionsTransformRadio)
-        return defaultSlot(optionsMapRadioComponent(schema.value.options!))
-
-      // 缁勪欢榛樿鎻掓Ы鍐呭
-      const content = callbackParamsFunction(componentContent)
-
-      if (isArray(content) || isString(content) || isVNode(content))
-        return defaultSlot(content)
-
-      return content
-    }
-
-    return (
-      <DynamicComponent.value
-        v-slots={dynamicComponentSlots()}
-        {...modelBind}
-        {...dynamicComponentAttribute.value}
-      >
-      </DynamicComponent.value>
+    return () => (
+      <>
+        { item.label }
+        { item.raw.tooltip ? renderTooltip(item.raw.tooltip) : undefined }
+      </>
     )
   }
 
-  const renderTooltip = (tooltip?: string) => {
-    return (
-      <n-tooltip>
-        { {
-          default: () => tooltip,
-          trigger: () => RenderUnoIcon('i-ic:outline-help', {
-            class: 'ml-5px mb-4px',
-          }),
-        } }
-      </n-tooltip>
-    )
-  }
+  return omitBy(
+    {
+      default: defaultSlot(),
+      label: labelSlot(),
+    },
+    value => value === undefined,
+  )
+}
 
-  const renderFormItemSlots = () => {
-    // 澶勭悊榛樿鎻掓Ы
-    const defaultSlot = () => {
-      return () => schema.value.contentSlot ? slots.default?.() : renderComponent()
-    }
-    // 澶勭悊label
-    const labelSlot = () => {
-      if (!schema.value.label)
-        return
-      const label = callbackParamsFunction(schema.value.label)
-      return () => (
-        <>
-          { label }
-          { schema.value.tooltip ? renderTooltip(schema.value.tooltip) : undefined }
-        </>
-      )
-    }
-
-    return omitBy(
-      {
-        default: defaultSlot(),
-        label: labelSlot(),
-      },
-      isUndefined,
-    )
-  }
-
-  const labelWidth = computed(() => {
-    if (schema.value.labelWidth)
-      return schema.value.labelWidth
-    if (schemaFormProps.labelWidth)
-      return schemaFormProps.labelWidth
-    return schemaFormProps.autoLabelWidth && maxLabelWidth.value && schemaFormProps.labelPlacement !== 'top' ? `${maxLabelWidth.value}px` : undefined
-  })
-  return () => (
+function FormItem() {
+  return (
     <n-form-item
       feedback-class="feedback"
-      {...formItemProps.value}
-      rule={formItemRules.value}
-      path={schema.value.field}
-      label-style={{ minWidth: labelWidth.value }}
-      label-width={undefined}
+      {...props.schema.formItemProps}
+      rule={props.schema.rules}
+      path={props.schema.field}
+      label-width={labelWidth.value}
       v-slots={renderFormItemSlots()}
     />
   )
-})
+}
 
-// 娣诲姞 item label width
-watch([itemEl, () => schema.value.label], async () => {
-  await nextTick()
-  if (!itemEl.value || index.value === -1 || props.id === undefined)
+let stopLabelResize: (() => void) | undefined
+let activeLabelKey: string | undefined
+let activeItemKey: string | undefined
+
+function clearItemData() {
+  if (activeItemKey)
+    itemsDataMap.delete(activeItemKey)
+  activeItemKey = undefined
+}
+
+function setItemData(labelWidth?: number) {
+  if (!itemEl.value || !props.schema.field || !isVisible.value) {
+    clearItemData()
     return
-  const label = itemEl.value.querySelector('.n-form-item-label')
-  if (!label || !schema.value.field)
-    return
-  itemsDataMap.set(uniqueIdentifier.value, {
+  }
+  const key = uniqueIdentifier.value
+  if (activeItemKey && activeItemKey !== key)
+    itemsDataMap.delete(activeItemKey)
+  const current = itemsDataMap.get(key)
+  itemsDataMap.set(key, {
     el: itemEl.value,
-    field: schema.value.field as string,
-    labelWidth: label.clientWidth,
+    field: props.schema.field,
+    labelWidth: labelWidth ?? current?.labelWidth,
   })
-})
+  activeItemKey = key
+}
+
+function clearLabelMeasure() {
+  stopLabelResize?.()
+  stopLabelResize = undefined
+  if (activeLabelKey) {
+    const current = itemsDataMap.get(activeLabelKey)
+    if (current)
+      itemsDataMap.set(activeLabelKey, { ...current, labelWidth: 0 })
+  }
+  activeLabelKey = undefined
+}
+
+function setLabelWidth(label: HTMLElement) {
+  if (!itemEl.value || !props.schema.field || !activeLabelKey)
+    return
+  const previousWidth = label.style.width
+  label.style.width = 'auto'
+  const labelText = label.querySelector<HTMLElement>('.n-form-item-label__text')
+  const labelTextWidth = labelText?.scrollWidth ?? 0
+  const labelWidth = Math.max(label.scrollWidth, labelTextWidth)
+  label.style.width = previousWidth
+  setItemData(Math.ceil(labelWidth))
+}
+
+watch([itemEl, () => props.schema.field, isVisible], () => {
+  setItemData()
+}, { flush: 'post', immediate: true })
+
+watch([itemEl, () => props.schema.label, shouldMeasureLabel], async () => {
+  clearLabelMeasure()
+  if (!shouldMeasureLabel.value)
+    return
+  await nextTick()
+  if (!itemEl.value)
+    return
+  const label = itemEl.value.querySelector<HTMLElement>('.n-form-item-label')
+  if (!label)
+    return
+  activeLabelKey = uniqueIdentifier.value
+  setLabelWidth(label)
+
+  if (typeof ResizeObserver === 'undefined')
+    return
+  const observer = new ResizeObserver(() => setLabelWidth(label))
+  observer.observe(label)
+  stopLabelResize = () => observer.disconnect()
+}, { flush: 'post' })
 
 onUnmounted(() => {
-  // 鍒犻櫎 item
-  itemsDataMap.delete(uniqueIdentifier.value)
+  clearLabelMeasure()
+  clearItemData()
 })
 </script>
 
 <template>
-  <grid-item v-if="isHide" v-bind="gridItemPropsMap">
+  <grid-item v-if="isVisible" v-bind="gridItemPropsMap">
     <FormItem v-if="!schema.slot" />
     <slot v-else :name="schema.slot" />
   </grid-item>
@@ -337,8 +272,8 @@ onUnmounted(() => {
 }
 
 :deep(.n-form-item-label__text) {
-  white-space: nowrap; /* 闃叉鏂囨湰鎹㈣ */
-  overflow: hidden; /* 瓒呭嚭閮ㄥ垎闅愯棌 */
-  text-overflow: ellipsis; /* 婧㈠嚭鐨勬枃鏈樉绀虹渷鐣ュ彿 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

@@ -13,15 +13,14 @@ export function resolveItemData(cols: number, props: GridItemData): GridItemData
 }
 
 export function setItemVisible(cols: number, collapsed: boolean, notCollapsedRows: number, itemDataList: GridItemData[]) {
-  let displayIndexList: number[] = []
-
   const isOverflow = (span: number) => Math.ceil(span / cols) > notCollapsedRows
 
-  if (collapsed) {
+  const getCollapsedDisplayIndexList = () => {
+    const collapsedDisplayIndexList: number[] = []
     let spanSum = itemDataList.reduce((num, item, index) => {
       if (item.suffix) {
         num += item.span
-        displayIndexList.push(index)
+        collapsedDisplayIndexList.push(index)
       }
       return num
     }, 0)
@@ -32,15 +31,17 @@ export function setItemVisible(cols: number, collapsed: boolean, notCollapsedRow
         spanSum += item.span
         if (isOverflow(spanSum))
           break
-        displayIndexList.push(i)
+        collapsedDisplayIndexList.push(i)
       }
     }
-  }
-  else {
-    displayIndexList = itemDataList.map((_, index) => index)
+    return collapsedDisplayIndexList
   }
 
-  const overflow = itemDataList.some((item, index) => !item.suffix && !displayIndexList.includes(index))
+  const collapsedDisplayIndexList = getCollapsedDisplayIndexList()
+  const displayIndexList = collapsed
+    ? collapsedDisplayIndexList
+    : itemDataList.map((_, index) => index)
+  const overflow = itemDataList.some((item, index) => !item.suffix && !collapsedDisplayIndexList.includes(index))
 
   return { overflow, displayIndexList }
 }

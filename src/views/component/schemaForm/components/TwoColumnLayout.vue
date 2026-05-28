@@ -95,7 +95,7 @@ const schema = ref<DefineSchema<typeof form.value>[]>([
     label: '邮箱',
     component: 'autoComplete',
     options: emailAutoComplete,
-    rule: 'mail',
+    rules: 'mail',
   },
   {
     field: 'age',
@@ -122,7 +122,7 @@ const schema = ref<DefineSchema<typeof form.value>[]>([
       showPasswordOn: 'click',
       disabled: computed(() => !form.value.password),
     },
-    rule: [
+    rules: [
       {
         required: true,
         message: '请再次输入密码',
@@ -131,7 +131,7 @@ const schema = ref<DefineSchema<typeof form.value>[]>([
       {
         message: '俩次输入密码不一致',
         trigger: ['blur', 'input'],
-        validator: (rule: FormItemRule, value: string) => {
+        validator: (rules: FormItemRule, value: string) => {
           return (
             !!form.value.password
             && form.value.password.startsWith(value)

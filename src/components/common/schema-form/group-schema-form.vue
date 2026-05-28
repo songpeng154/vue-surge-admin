@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import type { GridProps } from '@/components/common/grid/types'
 import type {
+  GroupCallbackSchema,
   GroupSchemaFormExpose,
   GroupSchemaFormProps,
   GroupSchemaFormSlots,
+  RuntimeGroupSchema,
   UnwrapGroupSchema,
 } from '@/components/common/schema-form/types/group.ts'
 import { isBoolean, isFunction } from 'es-toolkit'
-import { useProvideSchemaFormContext } from '@/components/common/schema-form/hooks/context.ts'
-import useCommonExpose from '@/components/common/schema-form/hooks/expose.ts'
-import useCommonMethod from '@/components/common/schema-form/hooks/method.ts'
-import useOmitProps from '@/hooks/common/omit-props.ts'
+import SchemaFormActions from '@/components/common/schema-form/components/schema-form-actions.vue'
+import { exposeSchemaForm, useSchemaFormController } from '@/components/common/schema-form/core/controller'
 
 const props = withDefaults(defineProps<GroupSchemaFormProps>(), {
   autoPlaceholder: true,
-  autoRules: true,
+  autoRequiredRule: true,
   autoLabelWidth: true,
-  autoScrollToFailField: true,
-  hideActionButton: false,
+  scrollToFirstError: true,
+  showActions: true,
   showLabel: true,
   showFeedback: true,
   showRequireMark: undefined,
@@ -35,73 +35,116 @@ const props = withDefaults(defineProps<GroupSchemaFormProps>(), {
   }),
   gridItemProps: 24,
   collapsedText: '展开',
-  unCollapsedText: '收起',
+  expandedText: '收起',
   defaultCollapsed: true,
-  defaultNotCollapsedRows: 2,
+  defaultCollapsedRows: 2,
 })
 const slots = defineSlots<GroupSchemaFormSlots>()
 
-// 表单模型
 const model = defineModel<Recordable>('model', { required: true })
 const schema = defineModel<UnwrapGroupSchema[]>('schema', { required: true })
 
-// 提供Schema上下文
-useProvideSchemaFormContext(props, model)
-const formProps = useOmitProps(props, ['schema'])
-const formContentSlots = useOmitProps(slots, ['customActionButton', 'buttonAfter', 'buttonBefore', 'groupTitle', 'collapsedButton'])
-// 通用的导出方法
-const { formRef, commonExpose } = useCommonExpose()
-// 通用方法
-const { handleReset, handleSubmit } = useCommonMethod(props, commonExpose, model)
+const { formRef, commonExpose, formProps, formContentSlots } = useSchemaFormController(props, model, slots, {
+  omitFormProps: ['schema'],
+  omitContentSlots: ['actions', 'actionsAfter', 'actionsBefore', 'groupTitle', 'collapsedButton'],
+})
 
-const groupSchema = ref<UnwrapGroupSchema[]>([])
+const groupState = reactive(new Map<string, { collapsed: boolean }>())
+const groupOverflowMap = reactive(new Map<string, boolean>())
 
-function handleGroupHide(config: UnwrapGroupSchema) {
-  let isHide = true
-  if (isBoolean(config.hide))
-    isHide = !config.hide
-  if (isFunction(config.hide))
-    isHide = !config.hide({ group: config, model: model.value })
-  return isHide
+function getGroupKey(config: UnwrapGroupSchema, index: number) {
+  return `${String(config.title || 'group')}-${index}`
 }
 
-// 展开收起文案
-function getGroupExpandCollapseText(config: UnwrapGroupSchema) {
+function createRuntimeGroupSchema(item: UnwrapGroupSchema, index: number): RuntimeGroupSchema {
+  const key = getGroupKey(item, index)
+  const state = groupState.get(key)
+  const collapsed = state?.collapsed ?? item.collapsed ?? props.defaultCollapsed
   return {
-    text: config.collapsed ?? props.defaultCollapsed ? props.collapsedText : props.unCollapsedText,
-    icon: config.collapsed ?? props.defaultCollapsed ? 'i-ic:outline-keyboard-arrow-down' : 'i-ic:outline-keyboard-arrow-up',
+    key,
+    title: item.title,
+    helpMessage: item.helpMessage,
+    hide: item.hide,
+    form: item.form,
+    collapsed,
+    collapsedRows: item.collapsedRows ?? props.defaultCollapsedRows,
+    hideCollapseButton: item.hideCollapseButton,
+    disabled: item.disabled,
+    gridItemProps: item.gridItemProps,
+    gridProps: item.gridProps,
   }
 }
 
-function toggleCollapse(config: UnwrapGroupSchema, isCollapsed?: boolean) {
-  config.collapsed = isCollapsed ?? !config.collapsed
+function createGroupCallbackSchema(config: RuntimeGroupSchema): GroupCallbackSchema {
+  return {
+    key: config.key,
+    title: config.title,
+    helpMessage: config.helpMessage,
+    form: config.form,
+    collapsed: config.collapsed,
+    collapsedRows: config.collapsedRows,
+    hideCollapseButton: config.hideCollapseButton,
+    disabled: config.disabled,
+    gridItemProps: config.gridItemProps,
+    gridProps: config.gridProps,
+  }
+}
+
+const groupSchema = computed<RuntimeGroupSchema[]>(() => {
+  const source = schema.value as UnwrapGroupSchema[]
+  const result: RuntimeGroupSchema[] = []
+  for (let index = 0; index < source.length; index += 1)
+    result.push(createRuntimeGroupSchema(source[index], index))
+  return result
+})
+
+function handleGroupHide(config: RuntimeGroupSchema) {
+  let isVisible = true
+  if (isBoolean(config.hide))
+    isVisible = !config.hide
+  if (isFunction(config.hide))
+    isVisible = !config.hide({ group: createGroupCallbackSchema(config), model: model.value })
+  return isVisible
+}
+
+function getGroupExpandCollapseText(config: RuntimeGroupSchema) {
+  return {
+    text: config.collapsed ? props.collapsedText : props.expandedText,
+    icon: config.collapsed ? 'i-ic:outline-keyboard-arrow-down' : 'i-ic:outline-keyboard-arrow-up',
+  }
+}
+
+function toggleCollapse(config: RuntimeGroupSchema, isCollapsed?: boolean) {
+  groupState.set(config.key, {
+    collapsed: isCollapsed ?? !config.collapsed,
+  })
 }
 
 function toggleCollapseByIndex(index: number, isCollapsed?: boolean) {
-  toggleCollapse(groupSchema.value[index], isCollapsed)
+  const group = groupSchema.value[index]
+  group && toggleCollapse(group, isCollapsed)
 }
 
-function handleGridPropsMap(config: UnwrapGroupSchema): GridProps {
-  const gridProps = props.gridProps || config.gridProps
+function handleGroupOverflowChange(config: RuntimeGroupSchema, isOverflow: boolean) {
+  groupOverflowMap.set(config.key, isOverflow)
+}
+
+function isCollapseButtonVisible(config: RuntimeGroupSchema) {
+  return !config.hideCollapseButton && groupOverflowMap.get(config.key) === true
+}
+
+function handleGridPropsMap(config: RuntimeGroupSchema): GridProps {
   return {
-    ...gridProps,
+    ...props.gridProps,
+    ...config.gridProps,
     collapsed: config.collapsed,
-    notCollapsedRows: config.notCollapsedRows,
+    notCollapsedRows: config.collapsedRows,
   }
 }
 
-watchEffect(() => {
-  groupSchema.value = schema.value.map((item) => {
-    item.collapsed = item.collapsed ?? props.defaultCollapsed
-    item.notCollapsedRows = item.notCollapsedRows || props.defaultNotCollapsedRows
-    return item
-  })
-})
-
-defineExpose<GroupSchemaFormExpose>({
-  ...commonExpose,
+defineExpose<GroupSchemaFormExpose>(exposeSchemaForm<GroupSchemaFormExpose>(commonExpose, {
   toggleCollapsed: toggleCollapseByIndex,
-})
+}))
 </script>
 
 <template>
@@ -110,7 +153,7 @@ defineExpose<GroupSchemaFormExpose>({
     v-bind="formProps"
     :model="model"
   >
-    <template v-for="(config, i) in groupSchema" :key="i">
+    <template v-for="(config) in groupSchema" :key="config.key">
       <template v-if="handleGroupHide(config)">
         <div class="schemaForm-groupHeader">
           <div class="schemaForm-groupHeader-title">
@@ -123,19 +166,20 @@ defineExpose<GroupSchemaFormExpose>({
                 <icon
                   icon="i-ant-design:question-circle-outlined"
                   class="text-tertiary"
-                  size="14ox"
+                  size="14px"
                 />
               </template>
               {{ config.helpMessage }}
             </n-tooltip>
           </div>
           <slot
+            v-if="isCollapseButtonVisible(config)"
             name="collapsedButton"
             :config="config"
+            :overflow="groupOverflowMap.get(config.key) === true"
             :toggle-collapsed="toggleCollapse"
           >
             <n-button
-              v-if="!config.isHidCollapseButton"
               :disabled="false"
               text
               type="primary"
@@ -154,6 +198,7 @@ defineExpose<GroupSchemaFormExpose>({
           :disabled="config.disabled"
           :grid-item-props="config.gridItemProps"
           :grid-props="handleGridPropsMap(config)"
+          @overflow-change="handleGroupOverflowChange(config, $event)"
         >
           <template v-for="(slot, key) in formContentSlots" #[key]="scope">
             <slot :name="key" v-bind="scope || {}" />
@@ -161,31 +206,21 @@ defineExpose<GroupSchemaFormExpose>({
         </schema-form-content>
       </template>
     </template>
-    <n-flex
-      v-if="!props.hideActionButton"
-      :span="24"
-      justify="end"
-      align="middle"
+    <SchemaFormActions
+      v-model:model="model"
+      :form-props="props"
+      :expose="commonExpose"
     >
-      <slot name="buttonBefore" />
-      <slot name="customActionButton">
-        <n-button
-          v-if="!hideReset"
-          :loading="props.resetLoading"
-          @click="handleReset"
-        >
-          {{ props.resetText }}
-        </n-button>
-        <n-button
-          type="primary"
-          :loading="props.submitLoading"
-          @click="handleSubmit"
-        >
-          {{ props.submitText }}
-        </n-button>
-      </slot>
-      <slot name="buttonAfter" />
-    </n-flex>
+      <template #actionsBefore>
+        <slot name="actionsBefore" />
+      </template>
+      <template v-if="$slots.actions" #actions>
+        <slot name="actions" />
+      </template>
+      <template #actionsAfter>
+        <slot name="actionsAfter" />
+      </template>
+    </SchemaFormActions>
   </schema-form-wrap>
 </template>
 
